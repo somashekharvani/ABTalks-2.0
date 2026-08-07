@@ -15,6 +15,9 @@ import { AchievementsGrid } from '@/components/dashboard/achievements-grid';
 import { JourneyTimeline } from '@/components/dashboard/journey-timeline';
 import { RecruiterPreview } from '@/components/dashboard/recruiter-preview';
 import { FixtureSwitcher } from '@/components/dashboard/fixture-switcher';
+import { FSMVisualizer } from '@/components/dashboard/fsm-visualizer';
+import { ConsistencyDNACard } from '@/components/dashboard/consistency-dna';
+import { ActivityFeed } from '@/components/dashboard/activity-feed';
 import { storage } from '@/lib/storage';
 import { DashboardViewModel } from '@/types';
 
@@ -104,6 +107,9 @@ export default function DashboardPage() {
       ) : (
         /* Student Mode View */
         <div className="space-y-6">
+          {/* FSM State Machine Interactive Diagram */}
+          <FSMVisualizer currentState={viewModel.streak.state} />
+
           {/* Upper Grid Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StreakCard streak={viewModel.streak} />
@@ -111,16 +117,24 @@ export default function DashboardPage() {
             <TaskCard task={viewModel.todayTask} submission={viewModel.todaySubmission} />
           </div>
 
-          {/* Weekly AI Insight */}
-          <WeeklyInsightCard insight={viewModel.weeklyInsight} />
+          {/* Consistency DNA & AI Coach */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ConsistencyDNACard dna={viewModel.dna} />
+            <WeeklyInsightCard insight={viewModel.weeklyInsight.description} />
+          </div>
 
           {/* Heatmap Section */}
           <Heatmap cells={viewModel.heatmap} currentDay={viewModel.student.currentDay} />
 
-          {/* Lower Grid: Achievements & Journey Timeline */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AchievementsGrid achievements={viewModel.achievements} />
-            <JourneyTimeline events={viewModel.journey} />
+          {/* Lower Grid: Achievements, Journey Timeline & Activity Feed */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <AchievementsGrid achievements={viewModel.achievements} />
+              <JourneyTimeline events={viewModel.journey} />
+            </div>
+            <div>
+              <ActivityFeed items={viewModel.activityFeed} />
+            </div>
           </div>
         </div>
       )}

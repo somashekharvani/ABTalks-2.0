@@ -168,7 +168,7 @@ describe('Streak Engine FSM & ViewModel Suite', () => {
 
       expect(viewModel.student.id).toBe('student-b');
       expect(viewModel.todayTask.day).toBe(12);
-      expect(viewModel.weeklyInsight).toContain('consistency peak');
+      expect(viewModel.weeklyInsight.description).toContain('consistency peak');
       expect(viewModel.journey.length).toBeGreaterThan(0);
       expect(viewModel.recruiterView).toBe(false);
     });

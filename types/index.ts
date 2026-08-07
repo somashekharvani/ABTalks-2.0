@@ -62,6 +62,24 @@ export interface MomentumScore {
   description: string;
 }
 
+export interface ConsistencyDNA {
+  discipline: number; // 0-100
+  velocity: number;   // 0-100
+  focus: number;      // 0-100
+  recovery: number;   // 0-100
+  reliability: number;// 0-100
+  archetype: 'The Marathon Builder' | 'The Tactical Strategist' | 'The Phoenix Resurgent' | 'The Vanguard Scholar';
+  summary: string;
+}
+
+export interface ActivityLogItem {
+  id: string;
+  timestamp: string;
+  title: string;
+  description: string;
+  type: 'submission' | 'freeze' | 'recovery' | 'badge' | 'milestone';
+}
+
 export interface JourneyEvent {
   id: string;
   day: number;
@@ -91,8 +109,16 @@ export interface DashboardViewModel {
     };
   };
   momentum: MomentumScore;
+  dna: ConsistencyDNA;
+  activityFeed: ActivityLogItem[];
   heatmap: HeatmapCell[];
-  weeklyInsight: string;
+  weeklyInsight: {
+    title: string;
+    headline: string;
+    description: string;
+    peakProductivityWindow: string;
+    actionableTip: string;
+  };
   achievements: Achievement[];
   journey: JourneyEvent[];
   todayTask: Task;
