@@ -1,15 +1,25 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { ExternalLink, Github, Linkedin, ShieldCheck, Snowflake, Flame, ArrowRight, X, Calendar } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tooltip } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { HeatmapCell } from '@/types';
+import { TASKS } from '@/data/tasks';
 import { cn } from '@/lib/utils';
 
 interface HeatmapProps {
   cells: HeatmapCell[];
   currentDay: number;
+  onSelectDay?: (day: number) => void;
 }
 
-export function Heatmap({ cells, currentDay }: HeatmapProps) {
+export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
+  const [selectedCellDay, setSelectedCellDay] = useState<number | null>(null);
+
   const getCellColor = (status: HeatmapCell['status']) => {
     switch (status) {
       case 'verified':
@@ -28,53 +38,153 @@ export function Heatmap({ cells, currentDay }: HeatmapProps) {
     }
   };
 
+  const handleCellClick = (day: number) => {
+    setSelectedCellDay(day);
+    if (onSelectDay) {
+      onSelectDay(day);
+    }
+  };
+
+  const selectedCell = cells.find((c) => c.day === selectedCellDay);
+  const selectedTask = selectedCellDay ? TASKS.find((t) => t.day === selectedCellDay) : null;
+
   return (
-    <Card className="border-slate-800/80">
-      <CardHeader className="mb-3">
-        <div>
-          <CardTitle className="flex items-center gap-2">
-            <span>60-Day Submission Heatmap</span>
-            <span className="text-xs font-normal text-slate-400">Day {currentDay} of 60</span>
-          </CardTitle>
-          <CardDescription>Dynamic consistency record updated in real-time</CardDescription>
-        </div>
+    <>
+      <Card className="border-slate-800/80">
+        <CardHeader className="mb-3">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <span>60-Day Submission Heatmap</span>
+              <span className="text-xs font-normal text-slate-400">Day {currentDay} of 60</span>
+            </CardTitle>
+            <CardDescription>Click any day cell to inspect detailed challenge record, proof links, and snapshot state</CardDescription>
+          </div>
 
-        {/* Heatmap Legend */}
-        <div className="flex items-center gap-2.5 text-[10px] text-slate-400 flex-wrap">
-          <div className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" />
-            <span>Verified</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-blue-500" />
-            <span>Frozen</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-amber-500/20 border border-amber-400" />
-            <span>Today</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-rose-950/40 border border-rose-900" />
-            <span>Missed</span>
-          </div>
-        </div>
-      </CardHeader>
-
-      {/* Grid Container */}
-      <div className="grid grid-cols-10 sm:grid-cols-12 gap-1.5 p-1 bg-slate-950/50 rounded-xl border border-slate-800/50">
-        {cells.map((cell) => (
-          <Tooltip key={cell.day} content={cell.tooltip}>
-            <div
-              className={cn(
-                'aspect-square rounded-md border text-[10px] font-mono flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-110 select-none',
-                getCellColor(cell.status)
-              )}
-            >
-              {cell.day}
+          {/* Heatmap Legend */}
+          <div className="flex items-center gap-2.5 text-[10px] text-slate-400 flex-wrap">
+            <div className="flex items-center gap-1">
+              <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" />
+              <span>Verified</span>
             </div>
-          </Tooltip>
-        ))}
-      </div>
-    </Card>
+            <div className="flex items-center gap-1">
+              <span className="w-2.5 h-2.5 rounded-sm bg-blue-500" />
+              <span>Frozen</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="w-2.5 h-2.5 rounded-sm bg-amber-500/20 border border-amber-400" />
+              <span>Today</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="w-2.5 h-2.5 rounded-sm bg-rose-950/40 border border-rose-900" />
+              <span>Missed</span>
+            </div>
+          </div>
+        </CardHeader>
+
+        {/* Grid Container */}
+        <div className="grid grid-cols-10 sm:grid-cols-12 gap-1.5 p-2 bg-slate-950/50 rounded-xl border border-slate-800/50">
+          {cells.map((cell) => (
+            <Tooltip key={cell.day} content={cell.tooltip}>
+              <div
+                onClick={() => handleCellClick(cell.day)}
+                className={cn(
+                  'aspect-square rounded-md border text-[10px] font-mono flex items-center justify-center transition-all duration-150 cursor-pointer hover:scale-115 active:scale-95 select-none relative',
+                  getCellColor(cell.status),
+                  selectedCellDay === cell.day && 'ring-2 ring-white scale-110 z-10'
+                )}
+              >
+                {cell.day}
+              </div>
+            </Tooltip>
+          ))}
+        </div>
+      </Card>
+
+      {/* Selected Day Record Modal */}
+      {selectedCellDay && selectedCell && selectedTask && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg p-6 rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl space-y-4">
+            <button
+              onClick={() => setSelectedCellDay(null)}
+              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-2">
+              <Badge variant={selectedCell.status === 'verified' ? 'green' : selectedCell.status === 'frozen' ? 'blue' : 'amber'}>
+                Day {selectedCell.day} Record
+              </Badge>
+              <Badge variant="outline">{selectedCell.status.toUpperCase()}</Badge>
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-xl font-bold text-white">{selectedTask.title}</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">{selectedTask.description}</p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2 text-xs">
+              <div className="flex items-center justify-between text-slate-400">
+                <span>Category: <strong className="text-slate-200">{selectedTask.category}</strong></span>
+                <span>Difficulty: <strong className="text-slate-200">{selectedTask.difficulty}</strong></span>
+              </div>
+
+              {selectedCell.status === 'verified' ? (
+                <div className="pt-2 border-t border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400 font-medium flex items-center gap-1.5">
+                      <Github className="w-3.5 h-3.5 text-white" /> Repository Proof:
+                    </span>
+                    <a
+                      href={`https://github.com/abtalks-student/day-${selectedCell.day}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-amber-400 hover:underline flex items-center gap-1 font-mono"
+                    >
+                      github.com/day-{selectedCell.day} <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400 font-medium flex items-center gap-1.5">
+                      <Linkedin className="w-3.5 h-3.5 text-blue-400" /> LinkedIn Post:
+                    </span>
+                    <a
+                      href={`https://linkedin.com/posts/day-${selectedCell.day}-completed`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-400 hover:underline flex items-center gap-1 font-mono"
+                    >
+                      linkedin.com/day-{selectedCell.day} <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              ) : selectedCell.status === 'frozen' ? (
+                <div className="pt-2 border-t border-slate-800 text-blue-300 flex items-center gap-2">
+                  <Snowflake className="w-4 h-4 text-blue-400" />
+                  <span>Missed day protected by Tactical Freeze shield. Streak preserved.</span>
+                </div>
+              ) : (
+                <div className="pt-2 border-t border-slate-800 text-amber-300 flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-amber-400" />
+                  <span>Challenge ready to be completed and submitted.</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <Button variant="secondary" size="sm" onClick={() => setSelectedCellDay(null)}>
+                Close Record
+              </Button>
+              <Link href={`/day/${selectedCell.day}`}>
+                <Button size="sm" className="font-bold gap-1">
+                  <span>Open Day {selectedCell.day} Page</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -147,7 +147,7 @@ export default function DashboardPage() {
           <ConsistencyDNACard dna={viewModel.dna} />
 
           {/* Heatmap Section */}
-          <Heatmap cells={viewModel.heatmap} currentDay={viewModel.viewDay} />
+          <Heatmap cells={viewModel.heatmap} currentDay={viewModel.viewDay} onSelectDay={handleSelectTimeMachineDay} />
 
           {/* Lower Grid: Achievements, Journey Timeline & Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
