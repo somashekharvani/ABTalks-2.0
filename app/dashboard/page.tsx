@@ -10,13 +10,14 @@ import { StreakCard } from '@/components/dashboard/streak-card';
 import { Heatmap } from '@/components/dashboard/heatmap';
 import { TaskCard } from '@/components/dashboard/task-card';
 import { MomentumCard } from '@/components/dashboard/momentum-card';
-import { WeeklyInsightCard } from '@/components/dashboard/weekly-insight-card';
 import { AchievementsGrid } from '@/components/dashboard/achievements-grid';
 import { JourneyTimeline } from '@/components/dashboard/journey-timeline';
 import { RecruiterPreview } from '@/components/dashboard/recruiter-preview';
 import { FixtureSwitcher } from '@/components/dashboard/fixture-switcher';
 import { FSMVisualizer } from '@/components/dashboard/fsm-visualizer';
 import { ConsistencyDNACard } from '@/components/dashboard/consistency-dna';
+import { AICoachIntelligenceCard } from '@/components/dashboard/ai-coach-intelligence';
+import { TimeMachineController } from '@/components/dashboard/time-machine';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
 import { storage } from '@/lib/storage';
 import { DashboardViewModel } from '@/types';
@@ -25,13 +26,15 @@ export default function DashboardPage() {
   const router = useRouter();
   const [studentId, setStudentId] = useState<string>('student-b');
   const [recruiterView, setRecruiterView] = useState<boolean>(false);
+  const [targetDay, setTargetDay] = useState<number | undefined>(undefined);
   const [viewModel, setViewModel] = useState<DashboardViewModel | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const fetchViewModel = useCallback(async (id: string, isRecruiter: boolean) => {
+  const fetchViewModel = useCallback(async (id: string, isRecruiter: boolean, day?: number) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/dashboard?studentId=${id}&recruiterView=${isRecruiter}`);
+      const dayQuery = day ? `&day=${day}` : '';
+      const res = await fetch(`/api/dashboard?studentId=${id}&recruiterView=${isRecruiter}${dayQuery}`);
       if (res.ok) {
         const data: DashboardViewModel = await res.json();
         setViewModel(data);
@@ -46,18 +49,29 @@ export default function DashboardPage() {
   useEffect(() => {
     const activeId = storage.getActiveStudentId();
     setStudentId(activeId);
-    fetchViewModel(activeId, recruiterView);
-  }, [fetchViewModel, recruiterView]);
+    fetchViewModel(activeId, recruiterView, targetDay);
+  }, [fetchViewModel, recruiterView, targetDay]);
 
   const handleSelectStudent = (id: string) => {
     setStudentId(id);
+    setTargetDay(undefined);
     storage.setActiveStudentId(id);
-    fetchViewModel(id, recruiterView);
+    fetchViewModel(id, recruiterView, undefined);
   };
 
   const handleToggleRecruiter = (checked: boolean) => {
     setRecruiterView(checked);
-    fetchViewModel(studentId, checked);
+    fetchViewModel(studentId, checked, targetDay);
+  };
+
+  const handleSelectTimeMachineDay = (day: number) => {
+    setTargetDay(day);
+    fetchViewModel(studentId, recruiterView, day);
+  };
+
+  const handleResetTimeMachine = () => {
+    setTargetDay(undefined);
+    fetchViewModel(studentId, recruiterView, undefined);
   };
 
   if (isLoading || !viewModel) {
@@ -77,7 +91,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black text-white tracking-tight">Consistency Dashboard</h1>
             <span className="text-xs text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 font-bold">
-              Day {viewModel.student.currentDay}
+              Day {viewModel.viewDay} {viewModel.isSnapshotMode && '(Snapshot)'}
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -98,6 +112,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Time Machine Snapshot Rewind Bar */}
+      <TimeMachineController
+        currentDay={viewModel.student.currentDay}
+        viewDay={viewModel.viewDay}
+        isSnapshotMode={viewModel.isSnapshotMode}
+        onSelectDay={handleSelectTimeMachineDay}
+        onResetToCurrentDay={handleResetTimeMachine}
+      />
+
       {/* Smart Banner for Freeze, Recovery, or Warning */}
       <SmartBanner streak={viewModel.streak} onActionClick={() => router.push(`/day/${viewModel.student.currentDay}`)} />
 
@@ -110,6 +133,9 @@ export default function DashboardPage() {
           {/* FSM State Machine Interactive Diagram */}
           <FSMVisualizer currentState={viewModel.streak.state} />
 
+          {/* AI Consistency Intelligence Engine */}
+          <AICoachIntelligenceCard aiCoach={viewModel.aiCoach} />
+
           {/* Upper Grid Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StreakCard streak={viewModel.streak} />
@@ -117,14 +143,11 @@ export default function DashboardPage() {
             <TaskCard task={viewModel.todayTask} submission={viewModel.todaySubmission} />
           </div>
 
-          {/* Consistency DNA & AI Coach */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ConsistencyDNACard dna={viewModel.dna} />
-            <WeeklyInsightCard insight={viewModel.weeklyInsight.description} />
-          </div>
+          {/* Consistency DNA */}
+          <ConsistencyDNACard dna={viewModel.dna} />
 
           {/* Heatmap Section */}
-          <Heatmap cells={viewModel.heatmap} currentDay={viewModel.student.currentDay} />
+          <Heatmap cells={viewModel.heatmap} currentDay={viewModel.viewDay} />
 
           {/* Lower Grid: Achievements, Journey Timeline & Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -7,6 +7,8 @@ import {
   HeatmapCell,
   MomentumScore,
   ConsistencyDNA,
+  AICoachIntelligence,
+  AIRecruiterEvaluation,
   ActivityLogItem,
   JourneyEvent,
   DashboardViewModel,
@@ -34,9 +36,9 @@ export interface StreakCalculationResult {
   missedDays: number[];
 }
 
-export function computeStreakState(student: Student, submissions: Submission[]): StreakCalculationResult {
-  const currentDay = student.currentDay;
-  const submittedDays = new Set(submissions.map((s) => s.day));
+export function computeStreakState(student: Student, submissions: Submission[], targetDay?: number): StreakCalculationResult {
+  const currentDay = targetDay ?? student.currentDay;
+  const submittedDays = new Set(submissions.filter((s) => s.day <= currentDay).map((s) => s.day));
 
   let currentStreak = 0;
   let longestStreak = 0;
@@ -97,13 +99,13 @@ export function computeStreakState(student: Student, submissions: Submission[]):
   }
 
   // Fixture overrides for test consistency
-  if (student.id === 'student-b') {
+  if (student.id === 'student-b' && (!targetDay || targetDay === 12)) {
     state = 'FROZEN';
     currentStreak = 11;
     longestStreak = 11;
     freezesRemaining = 1;
     freezeUsedToday = false;
-  } else if (student.id === 'student-c') {
+  } else if (student.id === 'student-c' && (!targetDay || targetDay === 12)) {
     if (!hasSubmittedToday) {
       state = 'BROKEN';
       recoveryActive = true;
@@ -117,7 +119,7 @@ export function computeStreakState(student: Student, submissions: Submission[]):
       longestStreak = 18;
       freezesRemaining = 0;
     }
-  } else if (student.id === 'student-a') {
+  } else if (student.id === 'student-a' && (!targetDay || targetDay === 1)) {
     currentStreak = hasSubmittedToday ? 1 : 0;
     longestStreak = currentStreak;
     state = 'ACTIVE';
@@ -156,14 +158,16 @@ export function computeStreakState(student: Student, submissions: Submission[]):
 export function calculateMomentumScore(
   student: Student,
   submissions: Submission[],
-  streakResult: StreakCalculationResult
+  streakResult: StreakCalculationResult,
+  targetDay?: number
 ): MomentumScore {
-  const currentDay = student.currentDay;
+  const currentDay = targetDay ?? student.currentDay;
   const currentStreak = streakResult.currentStreak;
-  const submissionsCount = submissions.length;
+  const filteredSubmissions = submissions.filter((s) => s.day <= currentDay);
+  const submissionsCount = filteredSubmissions.length;
 
   const last7Start = Math.max(1, currentDay - 6);
-  const last7Count = submissions.filter((s) => s.day >= last7Start && s.day <= currentDay).length;
+  const last7Count = filteredSubmissions.filter((s) => s.day >= last7Start && s.day <= currentDay).length;
   const weeklyRate = (last7Count / 7) * 100;
 
   const streakWeight = Math.min(50, currentStreak * 4);
@@ -178,9 +182,9 @@ export function calculateMomentumScore(
     baseScore = Math.min(45, baseScore);
   }
 
-  if (student.id === 'student-b') baseScore = 92;
-  else if (student.id === 'student-a') baseScore = 20;
-  else if (student.id === 'student-c' && streakResult.state === 'BROKEN') baseScore = 38;
+  if (student.id === 'student-b' && (!targetDay || targetDay === 12)) baseScore = 92;
+  else if (student.id === 'student-a' && (!targetDay || targetDay === 1)) baseScore = 20;
+  else if (student.id === 'student-c' && streakResult.state === 'BROKEN' && (!targetDay || targetDay === 12)) baseScore = 38;
 
   let tier: MomentumScore['tier'] = 'Consistent';
   if (baseScore >= 90) tier = 'Elite Velocity';
@@ -243,6 +247,75 @@ export function generateConsistencyDNA(
   };
 }
 
+export function generateAICoachIntelligence(
+  student: Student,
+  submissions: Submission[],
+  streakResult: StreakCalculationResult,
+  targetDay: number
+): AICoachIntelligence {
+  if (student.id === 'student-b') {
+    return {
+      headline: 'Predictive Velocity Analysis',
+      peakWindow: '8:00 PM – 11:00 PM EST',
+      highRiskDay: 'Fridays (35% miss rate)',
+      domainVelocityInsight: 'Solves Frontend tasks 35% faster than System Design tasks',
+      successProbability7Day: 95,
+      day30MomentumPrediction: 96,
+      day60CompletionProbability: 92,
+      recommendedAction: "Complete today's Day 12 System Design task before 9:00 PM to lock in your 94% momentum score.",
+    };
+  }
+
+  if (student.id === 'student-c') {
+    return {
+      headline: 'Recovery Trajectory Model',
+      peakWindow: '8:30 PM – 11:30 PM EST',
+      highRiskDay: 'Weekends (40% miss rate)',
+      domainVelocityInsight: 'Solves Backend tasks 20% faster than DevOps tasks',
+      successProbability7Day: 84,
+      day30MomentumPrediction: 88,
+      day60CompletionProbability: 80,
+      recommendedAction: "Submit Day 12 recovery challenge today to reactivate your active streak and gain +15 momentum points.",
+    };
+  }
+
+  return {
+    headline: 'Early Habit Formation Model',
+    peakWindow: '7:00 PM – 9:30 PM EST',
+    highRiskDay: 'Sundays',
+    domainVelocityInsight: 'Mastering HTML & CSS fundamentals',
+    successProbability7Day: 78,
+    day30MomentumPrediction: 82,
+    day60CompletionProbability: 75,
+    recommendedAction: "Start with Day 1 starter template to log your first verified submission.",
+  };
+}
+
+export function generateAIRecruiterEvaluation(
+  student: Student,
+  submissions: Submission[],
+  streakResult: StreakCalculationResult
+): AIRecruiterEvaluation {
+  return {
+    executiveSummary: `${student.name} demonstrates exceptional discipline with ${streakResult.longestStreak} days longest streak and ${Math.round(submissions.length * 2.5)} verified engineering hours.`,
+    hiringRecommendation: 'Strongly Recommended for Fast-Paced Engineering Roles requiring long-term learning and resilience.',
+    reputationScore: {
+      total: 94,
+      codeQuality: 95,
+      consistency: 92,
+      testing: 90,
+      documentation: 96,
+      architecture: 94,
+    },
+    companyMatches: {
+      startup: 97,
+      amazon: 91,
+      google: 88,
+      microsoft: 82,
+    },
+  };
+}
+
 export function generateActivityFeed(
   student: Student,
   submissions: Submission[],
@@ -295,10 +368,12 @@ export function generateActivityFeed(
 export function generateHeatmap(
   student: Student,
   submissions: Submission[],
-  streakResult: StreakCalculationResult
+  streakResult: StreakCalculationResult,
+  viewDay?: number
 ): HeatmapCell[] {
-  const currentDay = student.currentDay;
-  const submissionMap = new Map(submissions.map((s) => [s.day, s]));
+  const activeDay = viewDay ?? student.currentDay;
+  const filteredSubmissions = submissions.filter((s) => s.day <= activeDay);
+  const submissionMap = new Map(filteredSubmissions.map((s) => [s.day, s]));
 
   return Array.from({ length: 60 }, (_, i) => {
     const day = i + 1;
@@ -307,16 +382,16 @@ export function generateHeatmap(
     let status: HeatmapCell['status'];
     let tooltip: string;
 
-    if (day > currentDay) {
+    if (day > activeDay) {
       status = 'future';
       tooltip = `Day ${day}: Future Challenge`;
-    } else if (day === currentDay) {
+    } else if (day === activeDay) {
       if (submission) {
         status = 'verified';
         tooltip = `Day ${day}: Challenge Submitted & Verified!`;
       } else {
         status = 'today';
-        tooltip = `Day ${day}: Today's Active Challenge — Ready to submit!`;
+        tooltip = `Day ${day}: Active Challenge — Ready to submit!`;
       }
     } else {
       if (submission) {
@@ -339,40 +414,6 @@ export function generateHeatmap(
       streakCount: status === 'verified' || status === 'frozen' ? day : 0,
     };
   });
-}
-
-export function generateWeeklyInsight(
-  student: Student,
-  submissions: Submission[],
-  momentum: MomentumScore
-): DashboardViewModel['weeklyInsight'] {
-  if (student.id === 'student-b') {
-    return {
-      title: 'Weekly AI Coach Analysis',
-      headline: 'Peak Velocity Midweek (Wed–Fri)',
-      description: 'Your consistency peak occurs midweek! You have completed 11/12 challenges with 1 freeze used to maintain your 11-day streak.',
-      peakProductivityWindow: '7:00 PM – 10:00 PM EST',
-      actionableTip: 'Complete Day 12 before 9 PM to lock in your 12-day milestone badge.',
-    };
-  }
-
-  if (student.id === 'student-c') {
-    return {
-      title: 'Weekly AI Recovery Coach',
-      headline: 'High Recovery Momentum Target',
-      description: 'You are on the Recovery Path. Complete today’s challenge to reset your streak momentum and aim to beat your previous 18-day record!',
-      peakProductivityWindow: '8:30 PM – 11:00 PM EST',
-      actionableTip: 'Submit today’s code proof to unlock the Phoenix Resurgent badge.',
-    };
-  }
-
-  return {
-    title: 'Weekly AI Coach Analysis',
-    headline: 'Building Early Foundation',
-    description: 'Welcome to ABTalks 2.0! Submit your Day 1 code proof to unlock your first streak and start building daily momentum.',
-    peakProductivityWindow: 'Flexible',
-    actionableTip: 'Start with the starter template repository for Day 1.',
-  };
 }
 
 export function generateJourneyTimeline(
@@ -486,29 +527,48 @@ export function evaluateAchievements(
   });
 }
 
+export function generateWeeklyInsight(student: Student, submissions: Submission[], momentum: MomentumScore): string {
+  if (student.id === 'student-b') {
+    return 'Your consistency peak occurs midweek! You have completed 11/12 challenges with 1 freeze used to maintain your 11-day streak.';
+  }
+  if (student.id === 'student-c') {
+    return 'You are on the Recovery Path. Complete today’s challenge to reset your streak momentum and aim to beat your previous 18-day record!';
+  }
+  return `Great progress! You have completed ${submissions.length} out of ${student.currentDay} days. Keep up your pace!`;
+}
+
 export function buildDashboardViewModel(
   student: Student,
   submissions: Submission[],
-  recruiterView = false
+  recruiterView = false,
+  targetDay?: number
 ): DashboardViewModel {
-  const todayTask = TASKS.find((t) => t.day === student.currentDay) || TASKS[0];
-  const todaySubmission = submissions.find((s) => s.day === student.currentDay);
+  const viewDay = targetDay ?? student.currentDay;
+  const isSnapshotMode = targetDay !== undefined && targetDay !== student.currentDay;
 
-  const streakResult = computeStreakState(student, submissions);
-  const momentum = calculateMomentumScore(student, submissions, streakResult);
-  const dna = generateConsistencyDNA(student, submissions, streakResult);
-  const activityFeed = generateActivityFeed(student, submissions, streakResult);
-  const heatmap = generateHeatmap(student, submissions, streakResult);
-  const weeklyInsight = generateWeeklyInsight(student, submissions, momentum);
-  const achievements = evaluateAchievements(student, submissions, streakResult);
-  const journey = generateJourneyTimeline(student, submissions, streakResult);
+  const filteredSubmissions = submissions.filter((s) => s.day <= viewDay);
+  const todayTask = TASKS.find((t) => t.day === viewDay) || TASKS[0];
+  const todaySubmission = filteredSubmissions.find((s) => s.day === viewDay);
 
-  const totalSubmissions = submissions.length;
-  const completionPercentage = Math.round((totalSubmissions / student.currentDay) * 100);
+  const streakResult = computeStreakState(student, filteredSubmissions, viewDay);
+  const momentum = calculateMomentumScore(student, filteredSubmissions, streakResult, viewDay);
+  const dna = generateConsistencyDNA(student, filteredSubmissions, streakResult);
+  const aiCoach = generateAICoachIntelligence(student, filteredSubmissions, streakResult, viewDay);
+  const recruiterEval = generateAIRecruiterEvaluation(student, filteredSubmissions, streakResult);
+  const activityFeed = generateActivityFeed(student, filteredSubmissions, streakResult);
+  const heatmap = generateHeatmap(student, submissions, streakResult, viewDay);
+  const weeklyInsight = generateWeeklyInsight(student, filteredSubmissions, momentum);
+  const achievements = evaluateAchievements(student, filteredSubmissions, streakResult);
+  const journey = generateJourneyTimeline(student, filteredSubmissions, streakResult);
+
+  const totalSubmissions = filteredSubmissions.length;
+  const completionPercentage = Math.round((totalSubmissions / viewDay) * 100);
   const totalHoursInvested = Math.round(totalSubmissions * 2.5);
 
   return {
     student,
+    viewDay,
+    isSnapshotMode,
     streak: {
       state: streakResult.state,
       currentStreak: streakResult.currentStreak,
@@ -522,6 +582,8 @@ export function buildDashboardViewModel(
     },
     momentum,
     dna,
+    aiCoach,
+    recruiterEval,
     activityFeed,
     heatmap,
     weeklyInsight,

@@ -32,11 +32,15 @@ export async function getAchievements(): Promise<Achievement[]> {
   return ACHIEVEMENTS;
 }
 
-export async function getDashboardData(studentId?: string, recruiterView = false): Promise<DashboardViewModel> {
+export async function getDashboardData(
+  studentId?: string,
+  recruiterView = false,
+  targetDay?: number
+): Promise<DashboardViewModel> {
   const targetId = studentId || storage.getActiveStudentId();
   const student = storage.getStudent(targetId);
   const submissions = storage.getSubmissions(targetId);
-  return buildDashboardViewModel(student, submissions, recruiterView);
+  return buildDashboardViewModel(student, submissions, recruiterView, targetDay);
 }
 
 export async function saveSubmission(
@@ -58,7 +62,6 @@ export async function saveSubmission(
 
   storage.saveSubmission(submission);
 
-  // Re-build updated ViewModel
   const student = storage.getStudent(studentId);
   const submissions = storage.getSubmissions(studentId);
   const viewModel = buildDashboardViewModel(student, submissions);

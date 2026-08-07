@@ -72,6 +72,36 @@ export interface ConsistencyDNA {
   summary: string;
 }
 
+export interface AICoachIntelligence {
+  headline: string;
+  peakWindow: string;
+  highRiskDay: string;
+  domainVelocityInsight: string;
+  successProbability7Day: number; // e.g. 95%
+  day30MomentumPrediction: number; // e.g. 96
+  day60CompletionProbability: number; // e.g. 92%
+  recommendedAction: string;
+}
+
+export interface AIRecruiterEvaluation {
+  executiveSummary: string;
+  hiringRecommendation: string;
+  reputationScore: {
+    total: number;
+    codeQuality: number;
+    consistency: number;
+    testing: number;
+    documentation: number;
+    architecture: number;
+  };
+  companyMatches: {
+    startup: number;
+    amazon: number;
+    google: number;
+    microsoft: number;
+  };
+}
+
 export interface ActivityLogItem {
   id: string;
   timestamp: string;
@@ -91,6 +121,8 @@ export interface JourneyEvent {
 
 export interface DashboardViewModel {
   student: Student;
+  viewDay: number; // Active viewing day (supports Time Machine mode)
+  isSnapshotMode: boolean; // True if viewing historical snapshot
   streak: {
     state: StreakState;
     currentStreak: number;
@@ -110,15 +142,11 @@ export interface DashboardViewModel {
   };
   momentum: MomentumScore;
   dna: ConsistencyDNA;
+  aiCoach: AICoachIntelligence;
+  recruiterEval: AIRecruiterEvaluation;
   activityFeed: ActivityLogItem[];
   heatmap: HeatmapCell[];
-  weeklyInsight: {
-    title: string;
-    headline: string;
-    description: string;
-    peakProductivityWindow: string;
-    actionableTip: string;
-  };
+  weeklyInsight: string;
   achievements: Achievement[];
   journey: JourneyEvent[];
   todayTask: Task;
