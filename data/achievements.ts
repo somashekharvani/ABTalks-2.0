@@ -1,0 +1,55 @@
+import { Achievement } from '@/types';
+
+export const ACHIEVEMENTS: Achievement[] = [
+  {
+    id: 'badge-first-step',
+    title: 'First Step',
+    description: 'Submitted your first challenge code proof on ABTalks.',
+    icon: 'Rocket',
+    unlocked: true,
+    unlockedAt: 'Day 1',
+    criteria: 'Submit 1 challenge',
+  },
+  {
+    id: 'badge-7-day-streak',
+    title: 'Momentum Builder',
+    description: 'Maintained a flawless 7-day submission streak without missing a day.',
+    icon: 'Flame',
+    unlocked: true,
+    unlockedAt: 'Day 7',
+    criteria: '7 consecutive submissions',
+  },
+  {
+    id: 'badge-freeze-master',
+    title: 'Tactical Shield',
+    description: 'Utilized a Streak Freeze strategically to protect your hard-earned streak.',
+    icon: 'Snowflake',
+    unlocked: true,
+    unlockedAt: 'Day 10',
+    criteria: 'Use 1 streak freeze',
+  },
+  {
+    id: 'badge-14-day-master',
+    title: 'Fortress of Discipline',
+    description: 'Completed 14 consecutive days of coding challenges.',
+    icon: 'ShieldCheck',
+    unlocked: false,
+    criteria: '14 consecutive submissions',
+  },
+  {
+    id: 'badge-recovery-hero',
+    title: 'Phoenix Rising',
+    description: 'Came back stronger after breaking a streak and completed a recovery submission.',
+    icon: 'RefreshCw',
+    unlocked: false,
+    criteria: 'Complete a Recovery Path submission',
+  },
+  {
+    id: 'badge-30-day-titan',
+    title: '30-Day Titan',
+    description: 'Reached halfway mark of the 60-day engineering challenge.',
+    icon: 'Trophy',
+    unlocked: false,
+    criteria: '30 consecutive submissions',
+  },
+];

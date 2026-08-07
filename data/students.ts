@@ -1,0 +1,40 @@
+import { Student } from '@/types';
+
+export const STUDENTS: Record<string, Student> = {
+  'student-a': {
+    id: 'student-a',
+    name: 'Alex Rivera',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    bio: 'CS Sophomore building full-stack AI web apps. Starting the 60-day challenge today!',
+    role: 'Frontend Engineering Student',
+    githubUrl: 'https://github.com/alexrivera-dev',
+    linkedinUrl: 'https://linkedin.com/in/alexrivera-dev',
+    totalFreezes: 2,
+    usedFreezes: 0,
+    currentDay: 1,
+  },
+  'student-b': {
+    id: 'student-b',
+    name: 'Sarah Chen',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    bio: 'Self-taught developer aiming for senior backend roles. Preserved momentum with a freeze on Day 10.',
+    role: 'Full-Stack Developer',
+    githubUrl: 'https://github.com/sarahchen-code',
+    linkedinUrl: 'https://linkedin.com/in/sarahchen-tech',
+    totalFreezes: 2,
+    usedFreezes: 1,
+    currentDay: 12,
+  },
+  'student-c': {
+    id: 'student-c',
+    name: 'Marcus Vance',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    bio: 'Resilient builder coming back after a missed day. Focused on beating personal record of 18 days.',
+    role: 'Systems Architect in Training',
+    githubUrl: 'https://github.com/marcusvance-dev',
+    linkedinUrl: 'https://linkedin.com/in/marcusvance-systems',
+    totalFreezes: 0,
+    usedFreezes: 0,
+    currentDay: 12,
+  },
+};
