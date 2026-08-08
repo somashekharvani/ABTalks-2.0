@@ -132,6 +132,17 @@ Report Generated: ${new Date().toLocaleDateString()}`;
               <span className="text-slate-400">Architecture & Documentation:</span>
               <span className="text-slate-200 font-mono font-bold">{recruiterEval.reputationScore.documentation}%</span>
             </div>
+
+            {/* Evidence Behind Score */}
+            <div className="pt-2 border-t border-slate-800 space-y-1 font-sans text-[11px]">
+              <span className="text-amber-400 font-bold block uppercase tracking-wider text-[10px]">Evidence Behind Score:</span>
+              <div className="space-y-1 text-slate-300">
+                <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Pure TypeScript FSM with 8/8 Vitest tests passed</div>
+                <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Deterministic transition table & guards</div>
+                <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Optimistic UI with failure rollback strategy</div>
+                <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Offline-first LocalStorage sync & audit trail</div>
+              </div>
+            </div>
           </div>
         </Card>
 

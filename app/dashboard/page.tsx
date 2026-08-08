@@ -15,6 +15,7 @@ import { RecruiterPreview } from '@/components/dashboard/recruiter-preview';
 import { FixtureSwitcher } from '@/components/dashboard/fixture-switcher';
 import { FSMVisualizer } from '@/components/dashboard/fsm-visualizer';
 import { FSMPlayground } from '@/components/dashboard/fsm-playground';
+import { ArchitectureModal } from '@/components/dashboard/architecture-modal';
 import { ConsistencyDNACard } from '@/components/dashboard/consistency-dna';
 import { AICoachIntelligenceCard } from '@/components/dashboard/ai-coach-intelligence';
 import { TimeMachineController } from '@/components/dashboard/time-machine';
@@ -130,6 +131,9 @@ export default function DashboardPage() {
             unreadCount={viewModel.unreadNotificationsCount}
             onMarkAllRead={handleMarkAllNotificationsRead}
           />
+
+          {/* Architecture Spec Modal Button */}
+          <ArchitectureModal />
 
           <FixtureSwitcher currentStudentId={studentId} onSelectStudent={handleSelectStudent} />
 
