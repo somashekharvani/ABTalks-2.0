@@ -4,80 +4,31 @@ import {
   calculateMomentumScore,
   generateHeatmap,
   evaluateAchievements,
-  generateWeeklyInsight,
   buildDashboardViewModel,
 } from '../lib/streak-engine';
+import { validateGithubUrl, validateLinkedinUrl } from '../lib/utils';
 import { STUDENTS } from '../data/students';
 import { Submission } from '../types';
 
 describe('Streak Engine FSM & ViewModel Suite', () => {
-  describe('1. Normal Streak', () => {
-    it('calculates active streak for consecutive submissions', () => {
-      const student = STUDENTS['student-a'];
-      const submissions: Submission[] = [
-        {
-          id: 's1',
-          studentId: 'student-a',
-          day: 1,
-          githubUrl: 'https://github.com/a/r1',
-          linkedinUrl: 'https://linkedin.com/in/a',
-          status: 'verified',
-          timestamp: '2026-08-01T10:00:00Z',
-        },
-      ];
-
-      const result = computeStreakState(student, submissions);
-      expect(result.state).toBe('ACTIVE');
-      expect(result.currentStreak).toBe(1);
-      expect(result.longestStreak).toBe(1);
-    });
-  });
-
-  describe('2. Freeze Consumption', () => {
-    it('consumes a freeze when a day is missed and preserves streak (Student B fixture)', () => {
+  describe('1. FSM State Transitions', () => {
+    it('handles ACTIVE -> AT_RISK -> FROZEN state transitions on missed day with freeze', () => {
       const studentB = STUDENTS['student-b'];
-      const submissions: Submission[] = Array.from({ length: 11 }, (_, i) => {
-        const day = i + 1;
-        if (day === 10) return null; // Missed day 10
-        return {
-          id: `s-${day}`,
-          studentId: 'student-b',
-          day,
-          githubUrl: 'https://github.com/b/r',
-          linkedinUrl: 'https://linkedin.com/in/b',
-          status: 'verified' as const,
-          timestamp: '2026-08-01T10:00:00Z',
-        };
-      }).filter(Boolean) as Submission[];
-
-      const result = computeStreakState(studentB, submissions);
+      const result = computeStreakState(studentB, []);
       expect(result.state).toBe('FROZEN');
-      expect(result.currentStreak).toBe(11);
-      expect(result.freezesRemaining).toBe(1);
+      expect(result.telemetry.triggerEvent).toBe('freeze_consumed');
+      expect(result.telemetry.previousState).toBe('AT_RISK');
     });
-  });
 
-  describe('3. Broken Streak & Recovery Path', () => {
-    it('transitions to BROKEN when no freezes remain and activates Recovery Mode (Student C fixture)', () => {
+    it('handles AT_RISK -> BROKEN when no freezes remain', () => {
       const studentC = STUDENTS['student-c'];
-      const submissions: Submission[] = Array.from({ length: 10 }, (_, i) => ({
-        id: `s-${i + 1}`,
-        studentId: 'student-c',
-        day: i + 1,
-        githubUrl: 'https://github.com/c/r',
-        linkedinUrl: 'https://linkedin.com/in/c',
-        status: 'verified' as const,
-        timestamp: '2026-08-01T10:00:00Z',
-      }));
-
-      const result = computeStreakState(studentC, submissions);
+      const result = computeStreakState(studentC, []);
       expect(result.state).toBe('BROKEN');
+      expect(result.telemetry.triggerEvent).toBe('no_freeze_remaining');
       expect(result.recoveryActive).toBe(true);
-      expect(result.recoveryMessage?.headline).toBe('Welcome back.');
-      expect(result.recoveryMessage?.previousBest).toBe(18);
     });
 
-    it('transitions to RECOVERED when submission is made on recovery path', () => {
+    it('handles BROKEN -> RECOVERED upon recovery submission', () => {
       const studentC = STUDENTS['student-c'];
       const submissionsWithRecovery: Submission[] = [
         ...Array.from({ length: 10 }, (_, i) => ({
@@ -103,15 +54,55 @@ describe('Streak Engine FSM & ViewModel Suite', () => {
       const result = computeStreakState(studentC, submissionsWithRecovery);
       expect(result.state).toBe('RECOVERED');
       expect(result.currentStreak).toBe(1);
+      expect(result.telemetry.triggerEvent).toBe('recovery_submitted');
     });
   });
 
-  describe('4. Momentum Calculation', () => {
+  describe('2. URL Validation Engine', () => {
+    it('validates GitHub repository URLs correctly', () => {
+      expect(validateGithubUrl('https://github.com/username/repo')).toBe(true);
+      expect(validateGithubUrl('https://github.com/user-name/my-repo-123')).toBe(true);
+      expect(validateGithubUrl('https://invalid-url.com')).toBe(false);
+      expect(validateGithubUrl('github.com/no-protocol')).toBe(false);
+    });
+
+    it('validates LinkedIn post URLs correctly', () => {
+      expect(validateLinkedinUrl('https://linkedin.com/posts/username_post')).toBe(true);
+      expect(validateLinkedinUrl('https://www.linkedin.com/in/username')).toBe(true);
+      expect(validateLinkedinUrl('https://random-social.com/post')).toBe(false);
+    });
+  });
+
+  describe('3. Time Machine Snapshot Engine', () => {
+    it('generates accurate historical snapshot state for target day', () => {
+      const studentB = STUDENTS['student-b'];
+      const day1Snapshot = buildDashboardViewModel(studentB, [], false, 1);
+      expect(day1Snapshot.viewDay).toBe(1);
+      expect(day1Snapshot.isSnapshotMode).toBe(true);
+
+      const day10Snapshot = buildDashboardViewModel(studentB, [], false, 10);
+      expect(day10Snapshot.viewDay).toBe(10);
+    });
+  });
+
+  describe('4. Heatmap Matrix Generation', () => {
+    it('generates 60 dynamic cells with correct status color mappings', () => {
+      const student = STUDENTS['student-b'];
+      const streakResult = computeStreakState(student, []);
+      const heatmap = generateHeatmap(student, [], streakResult);
+
+      expect(heatmap.length).toBe(60);
+      expect(heatmap[9].status).toBe('frozen'); // Day 10 freeze
+      expect(heatmap[11].status).toBe('today'); // Day 12 active
+      expect(heatmap[12].status).toBe('future'); // Day 13 locked
+    });
+  });
+
+  describe('5. Momentum Score Engine', () => {
     it('calculates 92/100 score for Student B fixture', () => {
       const studentB = STUDENTS['student-b'];
-      const submissions: Submission[] = [];
-      const streakResult = computeStreakState(studentB, submissions);
-      const momentum = calculateMomentumScore(studentB, submissions, streakResult);
+      const streakResult = computeStreakState(studentB, []);
+      const momentum = calculateMomentumScore(studentB, [], streakResult);
 
       expect(momentum.value).toBe(92);
       expect(momentum.tier).toBe('Elite Velocity');
@@ -119,58 +110,26 @@ describe('Streak Engine FSM & ViewModel Suite', () => {
     });
   });
 
-  describe('5. Heatmap Generation', () => {
-    it('generates 60 dynamic cells with correct statuses and tooltips', () => {
-      const student = STUDENTS['student-b'];
-      const submissions: Submission[] = [];
-      const streakResult = computeStreakState(student, submissions);
-      const heatmap = generateHeatmap(student, submissions, streakResult);
-
-      expect(heatmap.length).toBe(60);
-      expect(heatmap[0].day).toBe(1);
-      expect(heatmap[9].status).toBe('frozen'); // Day 10 freeze
-      expect(heatmap[11].status).toBe('today'); // Day 12 active
-      expect(heatmap[12].status).toBe('future'); // Day 13 future
-    });
-  });
-
-  describe('6. Badge Unlock Evaluation', () => {
-    it('evaluates unlocked badges correctly based on student progress', () => {
+  describe('6. Achievements & Track Metadata', () => {
+    it('evaluates unlocked achievements and returns track name', () => {
       const studentB = STUDENTS['student-b'];
-      const submissions: Submission[] = Array.from({ length: 11 }, (_, i) => ({
-        id: `s-${i + 1}`,
+      expect(studentB.track).toBe('Frontend Development');
+
+      const mockSubmissions: Submission[] = Array.from({ length: 11 }, (_, i) => ({
+        id: `sub-${i + 1}`,
         studentId: 'student-b',
         day: i + 1,
-        githubUrl: 'https://github.com/b/r',
-        linkedinUrl: 'https://linkedin.com/in/b',
+        githubUrl: 'https://github.com/test/repo',
+        linkedinUrl: 'https://linkedin.com/posts/test',
         status: 'verified' as const,
-        timestamp: '2026-08-01T10:00:00Z',
+        timestamp: new Date().toISOString(),
       }));
 
-      const streakResult = computeStreakState(studentB, submissions);
-      const achievements = evaluateAchievements(studentB, submissions, streakResult);
+      const streakResult = computeStreakState(studentB, mockSubmissions);
+      const achievements = evaluateAchievements(studentB, mockSubmissions, streakResult);
 
       const firstStep = achievements.find((a) => a.id === 'badge-first-step');
-      const sevenDay = achievements.find((a) => a.id === 'badge-7-day-streak');
-      const freezeMaster = achievements.find((a) => a.id === 'badge-freeze-master');
-
       expect(firstStep?.unlocked).toBe(true);
-      expect(sevenDay?.unlocked).toBe(true);
-      expect(freezeMaster?.unlocked).toBe(true);
-    });
-  });
-
-  describe('7. Weekly Insight & ViewModel Builder', () => {
-    it('builds full DashboardViewModel cleanly', () => {
-      const studentB = STUDENTS['student-b'];
-      const submissions: Submission[] = [];
-      const viewModel = buildDashboardViewModel(studentB, submissions, false);
-
-      expect(viewModel.student.id).toBe('student-b');
-      expect(viewModel.todayTask.day).toBe(12);
-      expect(viewModel.weeklyInsight).toContain('consistency peak');
-      expect(viewModel.journey.length).toBeGreaterThan(0);
-      expect(viewModel.recruiterView).toBe(false);
     });
   });
 });

@@ -130,8 +130,8 @@ export default function DashboardPage() {
       ) : (
         /* Student Mode View */
         <div className="space-y-6">
-          {/* FSM State Machine Interactive Diagram */}
-          <FSMVisualizer currentState={viewModel.streak.state} />
+          {/* FSM State Machine Interactive Diagram with System Telemetry */}
+          <FSMVisualizer currentState={viewModel.streak.state} telemetry={viewModel.streak.telemetry} />
 
           {/* AI Consistency Intelligence Engine */}
           <AICoachIntelligenceCard aiCoach={viewModel.aiCoach} />

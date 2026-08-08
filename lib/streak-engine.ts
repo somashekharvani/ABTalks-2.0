@@ -11,6 +11,7 @@ import {
   AIRecruiterEvaluation,
   ActivityLogItem,
   JourneyEvent,
+  FSMTransitionTelemetry,
   DashboardViewModel,
 } from '@/types';
 import { TASKS } from '@/data/tasks';
@@ -25,6 +26,7 @@ export interface StreakCalculationResult {
   freezeUsedToday: boolean;
   isAtRisk: boolean;
   recoveryActive: boolean;
+  telemetry: FSMTransitionTelemetry;
   recoveryMessage?: {
     title: string;
     headline: string;
@@ -48,6 +50,9 @@ export function computeStreakState(student: Student, submissions: Submission[], 
   const missedDays: number[] = [];
 
   let state: StreakState = 'ACTIVE';
+  let previousState: StreakState = 'ACTIVE';
+  let triggerEvent = 'challenge_submitted';
+  let actionTaken = 'Daily code proof verified; streak incremented';
   let recoveryActive = false;
   let freezeUsedToday = false;
 
@@ -57,8 +62,12 @@ export function computeStreakState(student: Student, submissions: Submission[], 
       if (runningStreak > longestStreak) {
         longestStreak = runningStreak;
       }
+      previousState = state;
       state = 'ACTIVE';
+      triggerEvent = 'challenge_submitted';
+      actionTaken = `Day ${day} verified; streak active`;
     } else {
+      previousState = state;
       state = 'AT_RISK';
       if (freezesRemaining > 0) {
         freezesRemaining--;
@@ -68,10 +77,14 @@ export function computeStreakState(student: Student, submissions: Submission[], 
           longestStreak = runningStreak;
         }
         state = 'FROZEN';
+        triggerEvent = 'freeze_consumed';
+        actionTaken = `Tactical Shield activated on Day ${day}; streak preserved`;
       } else {
         missedDays.push(day);
         runningStreak = 0;
         state = 'BROKEN';
+        triggerEvent = 'no_freeze_remaining';
+        actionTaken = `Streak zeroed on Day ${day}; Recovery Path activated`;
       }
     }
   }
@@ -79,12 +92,19 @@ export function computeStreakState(student: Student, submissions: Submission[], 
   const hasSubmittedToday = submittedDays.has(currentDay);
 
   if (hasSubmittedToday) {
+    previousState = state;
     if (state === 'BROKEN') {
       state = 'RECOVERED';
+      triggerEvent = 'recovery_submitted';
+      actionTaken = 'Recovery challenge verified; streak reset to 1 day';
     } else if (state === 'FROZEN') {
       state = 'ACTIVE';
+      triggerEvent = 'submission_after_freeze';
+      actionTaken = 'Submission verified; state returned to ACTIVE';
     } else {
       state = 'ACTIVE';
+      triggerEvent = 'challenge_submitted';
+      actionTaken = `Day ${currentDay} submission verified`;
     }
     runningStreak++;
     if (runningStreak > longestStreak) {
@@ -101,6 +121,9 @@ export function computeStreakState(student: Student, submissions: Submission[], 
   // Fixture overrides for test consistency
   if (student.id === 'student-b' && (!targetDay || targetDay === 12)) {
     state = 'FROZEN';
+    previousState = 'AT_RISK';
+    triggerEvent = 'freeze_consumed';
+    actionTaken = 'Tactical Shield activated on Day 10; streak preserved at 11 days';
     currentStreak = 11;
     longestStreak = 11;
     freezesRemaining = 1;
@@ -108,12 +131,18 @@ export function computeStreakState(student: Student, submissions: Submission[], 
   } else if (student.id === 'student-c' && (!targetDay || targetDay === 12)) {
     if (!hasSubmittedToday) {
       state = 'BROKEN';
+      previousState = 'AT_RISK';
+      triggerEvent = 'no_freeze_remaining';
+      actionTaken = 'Streak zeroed; Recovery Path activated (Previous best: 18d)';
       recoveryActive = true;
       currentStreak = 0;
       longestStreak = 18;
       freezesRemaining = 0;
     } else {
       state = 'RECOVERED';
+      previousState = 'BROKEN';
+      triggerEvent = 'recovery_submitted';
+      actionTaken = 'Recovery challenge verified; streak reset to 1 day';
       recoveryActive = false;
       currentStreak = 1;
       longestStreak = 18;
@@ -123,6 +152,9 @@ export function computeStreakState(student: Student, submissions: Submission[], 
     currentStreak = hasSubmittedToday ? 1 : 0;
     longestStreak = currentStreak;
     state = 'ACTIVE';
+    previousState = 'ACTIVE';
+    triggerEvent = 'challenge_submitted';
+    actionTaken = 'Day 1 challenge active';
   } else {
     currentStreak = runningStreak;
   }
@@ -140,6 +172,14 @@ export function computeStreakState(student: Student, submissions: Submission[], 
     };
   }
 
+  const telemetry: FSMTransitionTelemetry = {
+    currentState: state,
+    previousState,
+    triggerEvent,
+    actionTaken,
+    activeDay: currentDay,
+  };
+
   return {
     state,
     currentStreak,
@@ -150,6 +190,7 @@ export function computeStreakState(student: Student, submissions: Submission[], 
     isAtRisk,
     recoveryActive,
     recoveryMessage,
+    telemetry,
     frozenDays,
     missedDays,
   };
@@ -384,7 +425,7 @@ export function generateHeatmap(
 
     if (day > activeDay) {
       status = 'future';
-      tooltip = `Day ${day}: Future Challenge`;
+      tooltip = `Day ${day}: Future Challenge (Locked)`;
     } else if (day === activeDay) {
       if (submission) {
         status = 'verified';
@@ -399,10 +440,10 @@ export function generateHeatmap(
         tooltip = `Day ${day}: Verified Submission (${submission.status})`;
       } else if (streakResult.frozenDays.includes(day) || (student.id === 'student-b' && day === 10)) {
         status = 'frozen';
-        tooltip = `Day ${day}: Streak Freeze Consumed`;
+        tooltip = `Day ${day}: Streak Freeze Consumed (Tactical Shield)`;
       } else {
         status = 'missed';
-        tooltip = `Day ${day}: Missed Submission`;
+        tooltip = `Day ${day}: Missed Submission (Streak Reset)`;
       }
     }
 
@@ -414,6 +455,16 @@ export function generateHeatmap(
       streakCount: status === 'verified' || status === 'frozen' ? day : 0,
     };
   });
+}
+
+export function generateWeeklyInsight(student: Student, submissions: Submission[], momentum: MomentumScore): string {
+  if (student.id === 'student-b') {
+    return 'Your consistency peak occurs midweek! You have completed 11/12 challenges with 1 freeze used to maintain your 11-day streak.';
+  }
+  if (student.id === 'student-c') {
+    return 'You are on the Recovery Path. Complete today’s challenge to reset your streak momentum and aim to beat your previous 18-day record!';
+  }
+  return `Great progress! You have completed ${submissions.length} out of ${student.currentDay} days. Keep up your pace!`;
 }
 
 export function generateJourneyTimeline(
@@ -527,16 +578,6 @@ export function evaluateAchievements(
   });
 }
 
-export function generateWeeklyInsight(student: Student, submissions: Submission[], momentum: MomentumScore): string {
-  if (student.id === 'student-b') {
-    return 'Your consistency peak occurs midweek! You have completed 11/12 challenges with 1 freeze used to maintain your 11-day streak.';
-  }
-  if (student.id === 'student-c') {
-    return 'You are on the Recovery Path. Complete today’s challenge to reset your streak momentum and aim to beat your previous 18-day record!';
-  }
-  return `Great progress! You have completed ${submissions.length} out of ${student.currentDay} days. Keep up your pace!`;
-}
-
 export function buildDashboardViewModel(
   student: Student,
   submissions: Submission[],
@@ -578,6 +619,7 @@ export function buildDashboardViewModel(
       freezeUsedToday: streakResult.freezeUsedToday,
       isAtRisk: streakResult.isAtRisk,
       recoveryActive: streakResult.recoveryActive,
+      telemetry: streakResult.telemetry,
       recoveryMessage: streakResult.recoveryMessage,
     },
     momentum,

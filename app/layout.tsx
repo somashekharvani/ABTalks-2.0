@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Link from 'next/link';
-import { Flame, LayoutDashboard, Calendar, ShieldCheck } from 'lucide-react';
+import { Flame, LayoutDashboard, Calendar, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'ABTalks 2.0 — Built for Consistency',
@@ -28,26 +28,34 @@ export default function RootLayout({
                 <span className="text-base font-black text-white tracking-tight flex items-center gap-1.5">
                   ABTalks <span className="text-amber-400 text-xs px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">2.0</span>
                 </span>
-                <span className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Built for Consistency</span>
+                <span className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Frontend Development Track</span>
               </div>
             </Link>
 
-            <nav className="flex items-center gap-2">
-              <Link
-                href="/dashboard"
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center gap-1.5 transition-colors"
-              >
-                <LayoutDashboard className="w-4 h-4 text-amber-400" />
-                <span>Dashboard</span>
-              </Link>
-              <Link
-                href="/day/12"
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center gap-1.5 transition-colors"
-              >
-                <Calendar className="w-4 h-4 text-blue-400" />
-                <span>Day 12</span>
-              </Link>
-            </nav>
+            <div className="flex items-center gap-3">
+              {/* Header Sync Status Indicator */}
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-mono text-emerald-400">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Synced just now</span>
+              </div>
+
+              <nav className="flex items-center gap-2">
+                <Link
+                  href="/dashboard"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center gap-1.5 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-amber-400" />
+                  <span>Dashboard</span>
+                </Link>
+                <Link
+                  href="/day/12"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 flex items-center gap-1.5 transition-colors"
+                >
+                  <Calendar className="w-4 h-4 text-blue-400" />
+                  <span>Day 12</span>
+                </Link>
+              </nav>
+            </div>
           </div>
         </header>
 
@@ -61,8 +69,8 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Flame className="w-4 h-4 text-amber-400" />
-              <span className="font-semibold text-slate-300">ABTalks 2.0</span>
-              <span>— Deterministic FSM Consistency Engine</span>
+              <span className="font-semibold text-slate-300">Frontend Development Track</span>
+              <span>— 60-Day Developer Consistency Challenge</span>
             </div>
             <p className="text-slate-400">© 2026 ABTalks. Built with Next.js 15, React 19 & Tailwind CSS v4.</p>
           </div>

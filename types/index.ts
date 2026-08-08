@@ -8,6 +8,7 @@ export interface Student {
   avatar: string;
   bio: string;
   role: string;
+  track: string; // e.g. "Frontend Development"
   githubUrl: string;
   linkedinUrl: string;
   totalFreezes: number;
@@ -77,9 +78,9 @@ export interface AICoachIntelligence {
   peakWindow: string;
   highRiskDay: string;
   domainVelocityInsight: string;
-  successProbability7Day: number; // e.g. 95%
-  day30MomentumPrediction: number; // e.g. 96
-  day60CompletionProbability: number; // e.g. 92%
+  successProbability7Day: number;
+  day30MomentumPrediction: number;
+  day60CompletionProbability: number;
   recommendedAction: string;
 }
 
@@ -119,10 +120,18 @@ export interface JourneyEvent {
   date: string;
 }
 
+export interface FSMTransitionTelemetry {
+  currentState: StreakState;
+  previousState: StreakState;
+  triggerEvent: string;
+  actionTaken: string;
+  activeDay: number;
+}
+
 export interface DashboardViewModel {
   student: Student;
-  viewDay: number; // Active viewing day (supports Time Machine mode)
-  isSnapshotMode: boolean; // True if viewing historical snapshot
+  viewDay: number;
+  isSnapshotMode: boolean;
   streak: {
     state: StreakState;
     currentStreak: number;
@@ -132,6 +141,7 @@ export interface DashboardViewModel {
     freezeUsedToday: boolean;
     isAtRisk: boolean;
     recoveryActive: boolean;
+    telemetry: FSMTransitionTelemetry;
     recoveryMessage?: {
       title: string;
       headline: string;

@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Github, Linkedin, Send, AlertCircle } from 'lucide-react';
+import { Github, Linkedin, Send, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { validateGithubUrl, validateLinkedinUrl } from '@/lib/utils';
@@ -16,6 +18,8 @@ interface SubmissionFormProps {
   onRollback: (errorMsg: string) => void;
 }
 
+type SyncStage = 'idle' | 'optimistic_submitted' | 'syncing' | 'verified' | 'failed';
+
 export function SubmissionForm({
   day,
   studentId,
@@ -27,6 +31,7 @@ export function SubmissionForm({
   const [githubUrl, setGithubUrl] = useState(existingSubmission?.githubUrl || `https://github.com/${studentId}/abtalks-day-${day}`);
   const [linkedinUrl, setLinkedinUrl] = useState(existingSubmission?.linkedinUrl || `https://linkedin.com/posts/${studentId}_day-${day}-completed`);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [syncStage, setSyncStage] = useState<SyncStage>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -34,20 +39,20 @@ export function SubmissionForm({
     e.preventDefault();
     setErrorMessage(null);
 
-    // Client-side validation check
     if (!validateGithubUrl(githubUrl)) {
-      setErrorMessage('Please enter a valid GitHub repository URL (e.g. https://github.com/username/repo)');
+      setErrorMessage('Invalid GitHub repository URL format. Example: https://github.com/username/repo');
       return;
     }
 
     if (!validateLinkedinUrl(linkedinUrl)) {
-      setErrorMessage('Please enter a valid LinkedIn post URL (e.g. https://linkedin.com/posts/username_post)');
+      setErrorMessage('Invalid LinkedIn post URL format. Example: https://linkedin.com/posts/username_post');
       return;
     }
 
     setIsSubmitting(true);
+    setSyncStage('optimistic_submitted');
 
-    // Step 1: Immediate Optimistic Update
+    // Stage 1: Immediate Optimistic Update
     const optimisticSub: Submission = {
       id: `temp-${Date.now()}`,
       studentId,
@@ -61,8 +66,12 @@ export function SubmissionForm({
 
     onOptimisticSubmit(optimisticSub);
 
+    // Stage 2: Syncing with server
+    setTimeout(() => {
+      setSyncStage('syncing');
+    }, 400);
+
     try {
-      // Step 2: POST /api/submissions
       const response = await fetch('/api/submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,21 +89,22 @@ export function SubmissionForm({
         throw new Error(data.error || 'Submission failed server validation');
       }
 
-      // Step 3: Success -> Trigger celebration & keep state
-      setShowSuccess(true);
+      setSyncStage('verified');
 
-      // Trigger Confetti milestone celebration
       confetti({
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 },
       });
 
-      onSuccess(data.viewModel, data.submission);
+      setTimeout(() => {
+        setShowSuccess(true);
+        onSuccess(data.viewModel, data.submission);
+      }, 500);
     } catch (err) {
-      // Step 4: Failure -> Rollback optimistic update
+      setSyncStage('failed');
       const msg = (err as Error).message || 'Failed to submit code proof';
-      setErrorMessage(msg);
+      setErrorMessage(`Couldn't verify submission: ${msg}. Your previous state has been restored. Try again.`);
       onRollback(msg);
     } finally {
       setIsSubmitting(false);
@@ -102,7 +112,7 @@ export function SubmissionForm({
   };
 
   if (showSuccess) {
-    return <SuccessAnimation day={day} onClose={() => setShowSuccess(false)} />;
+    return <SuccessAnimation day={day} onClose={() => { setShowSuccess(false); setSyncStage('idle'); }} />;
   }
 
   return (
@@ -120,6 +130,39 @@ export function SubmissionForm({
       </CardHeader>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Visible Sync Pipeline Progress Banner */}
+        {syncStage !== 'idle' && (
+          <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs font-mono">
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="font-bold text-amber-400">Optimistic UI Sync Pipeline</span>
+              <span className="text-[10px] text-slate-500 uppercase">{syncStage}</span>
+            </div>
+
+            <div className="space-y-1 text-[11px]">
+              <div className={`flex items-center gap-2 ${(syncStage as string) !== 'idle' ? 'text-emerald-400' : 'text-slate-500'}`}>
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>✓ Proof submitted (Optimistic Client Update)</span>
+              </div>
+              <div className={`flex items-center gap-2 ${syncStage === 'syncing' || syncStage === 'verified' ? 'text-amber-400' : 'text-slate-500'}`}>
+                {syncStage === 'syncing' ? <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                <span>Syncing with ABTalks Route Handler...</span>
+              </div>
+              {syncStage === 'verified' && (
+                <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>✓ Server Verified & State Reconciled</span>
+                </div>
+              )}
+              {syncStage === 'failed' && (
+                <div className="flex items-center gap-2 text-rose-400 font-bold">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>✖ Verification failed — Rollback Executed</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {errorMessage && (
           <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2 animate-in fade-in">
             <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
