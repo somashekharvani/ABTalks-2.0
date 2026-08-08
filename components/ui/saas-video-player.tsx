@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, RotateCcw, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, ShieldCheck, Video, Youtube } from 'lucide-react';
 
 interface SaaSVideoPlayerProps {
   title: string;
@@ -10,10 +10,10 @@ interface SaaSVideoPlayerProps {
 }
 
 export function SaaSVideoPlayer({ title, duration, youtubeUrl }: SaaSVideoPlayerProps) {
+  const [playerMode, setPlayerMode] = useState<'html5' | 'youtube'>('html5');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
-  const [useFallbackPlayer, setUseFallbackPlayer] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const togglePlay = () => {
@@ -53,7 +53,7 @@ export function SaaSVideoPlayer({ title, duration, youtubeUrl }: SaaSVideoPlayer
 
   return (
     <div className="rounded-2xl bg-slate-950/90 border border-slate-800 p-4 space-y-3 overflow-hidden shadow-2xl">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-xs font-bold text-slate-100 flex items-center gap-1.5">
@@ -66,23 +66,31 @@ export function SaaSVideoPlayer({ title, duration, youtubeUrl }: SaaSVideoPlayer
             ⏱ {duration} HD Lesson
           </span>
           <button
-            onClick={() => setUseFallbackPlayer(!useFallbackPlayer)}
-            className="text-[10px] font-mono text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-lg transition-colors"
+            onClick={() => setPlayerMode(playerMode === 'html5' ? 'youtube' : 'html5')}
+            className="text-[10px] font-mono text-slate-300 hover:text-white bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1"
           >
-            {useFallbackPlayer ? 'Use Stream Player' : 'Switch Mode'}
+            {playerMode === 'html5' ? (
+              <>
+                <Youtube className="w-3 h-3 text-rose-500" /> Switch to YouTube
+              </>
+            ) : (
+              <>
+                <Video className="w-3 h-3 text-emerald-400" /> Switch to Stream
+              </>
+            )}
           </button>
         </div>
       </div>
 
       <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-800 group shadow-inner">
-        {!useFallbackPlayer && youtubeUrl ? (
+        {playerMode === 'youtube' && youtubeUrl ? (
           <iframe
             src={youtubeUrl}
             title={title}
             className="w-full h-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            onError={() => setUseFallbackPlayer(true)}
+            onError={() => setPlayerMode('html5')}
           />
         ) : (
           <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -96,13 +104,13 @@ export function SaaSVideoPlayer({ title, duration, youtubeUrl }: SaaSVideoPlayer
               onPause={() => setIsPlaying(false)}
             />
 
-            {/* Custom Control Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex flex-col justify-between p-4 opacity-90 group-hover:opacity-100 transition-opacity">
+            {/* Controls Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent flex flex-col justify-between p-4 opacity-95 group-hover:opacity-100 transition-opacity">
               <div className="flex items-center justify-between text-xs text-white">
-                <span className="px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-700/80 font-mono text-[10px] text-emerald-400 font-bold flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Guaranteed Active Lesson Stream
+                <span className="px-2.5 py-1 rounded-full bg-slate-900/90 backdrop-blur-md border border-slate-700/80 font-mono text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> 100% Guaranteed Active HD Stream
                 </span>
-                <span className="text-[10px] font-mono text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-mono text-slate-300 bg-slate-900/90 px-2 py-0.5 rounded-full">
                   1080p 60fps
                 </span>
               </div>
@@ -123,8 +131,8 @@ export function SaaSVideoPlayer({ title, duration, youtubeUrl }: SaaSVideoPlayer
 
                 <div className="flex items-center gap-2 flex-1">
                   <span className="text-[10px] font-mono text-slate-400">00:00</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden cursor-pointer">
-                    <div className="h-full bg-amber-500 w-1/3 rounded-full" />
+                  <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden cursor-pointer" onClick={togglePlay}>
+                    <div className={`h-full bg-amber-500 rounded-full transition-all ${isPlaying ? 'w-2/3 animate-pulse' : 'w-1/3'}`} />
                   </div>
                   <span className="text-[10px] font-mono text-slate-400">{duration}</span>
                 </div>
