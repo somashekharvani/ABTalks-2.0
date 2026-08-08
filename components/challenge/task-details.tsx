@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Clock, Code2, Sparkles, ExternalLink, Play, BookOpen, Star, FileText } from 'lucide-react';
+import { Clock, Code2, Sparkles, ExternalLink, Play, BookOpen, Star, Download, FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { SaaSVideoPlayer } from '@/components/ui/saas-video-player';
+import { downloadPdfNotes } from '@/lib/export-pdf';
 import { Task } from '@/types';
 
 interface TaskDetailsProps {
@@ -70,35 +73,33 @@ export function TaskDetails({ task }: TaskDetailsProps) {
         </button>
       </div>
 
-      {/* Video Class Lesson Embedded Player */}
+      {/* Video Class Lesson Player Component */}
       {(activeTab === 'all' || activeTab === 'video') && (
-        <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-              <Play className="w-4 h-4 text-amber-400" /> {task.videoTitle}
-            </span>
-            <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2.5 py-0.5 rounded-full">
-              ⏱ {task.videoDuration} Class Lesson
-            </span>
-          </div>
-          <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-800">
-            <iframe
-              src={task.videoClassUrl}
-              title={task.videoTitle}
-              className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </div>
+        <SaaSVideoPlayer
+          title={task.videoTitle}
+          duration={task.videoDuration}
+          youtubeUrl={task.videoClassUrl}
+        />
       )}
 
-      {/* Technical Lecture Notes */}
+      {/* Technical Lecture Notes & PDF Download */}
       {(activeTab === 'all' || activeTab === 'notes') && (
-        <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-1.5">
-          <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
-            <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Day {task.day} Technical Lecture Notes
-          </h4>
+        <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
+              <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Day {task.day} Technical Lecture Notes
+            </h4>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadPdfNotes(task)}
+              className="text-[11px] font-bold gap-1.5 border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export PDF Notes</span>
+            </Button>
+          </div>
           <p className="text-xs text-slate-300 leading-relaxed font-sans">{task.notes}</p>
         </div>
       )}

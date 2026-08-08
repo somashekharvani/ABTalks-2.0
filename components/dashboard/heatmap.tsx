@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ExternalLink, Github, Linkedin, ShieldCheck, Snowflake, Flame, ArrowRight, X, Calendar, Play, Code2, BookOpen, Star } from 'lucide-react';
+import { ExternalLink, Github, Linkedin, ShieldCheck, Snowflake, Flame, ArrowRight, X, Calendar, Play, Code2, BookOpen, Download } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tooltip } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SaaSVideoPlayer } from '@/components/ui/saas-video-player';
+import { downloadPdfNotes } from '@/lib/export-pdf';
 import { HeatmapCell } from '@/types';
 import { TASKS } from '@/data/tasks';
 import { cn } from '@/lib/utils';
@@ -57,7 +59,7 @@ export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
               <span>60-Day Submission Heatmap</span>
               <span className="text-xs font-normal text-slate-400">Day {currentDay} of 60</span>
             </CardTitle>
-            <CardDescription>Click any past or active day cell to open the day's technical notes, code examples, video class, and score record</CardDescription>
+            <CardDescription>Click any past or active day cell to open the day's technical notes, PDF export, video class, and score record</CardDescription>
           </div>
 
           {/* Heatmap Legend */}
@@ -100,7 +102,7 @@ export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
         </div>
       </Card>
 
-      {/* Day Inspector Modal with Video Class, Technical Notes, Code Example, & Score */}
+      {/* Day Inspector Modal with Video Player, Notes PDF Export, Code Example, & Score */}
       {selectedCellDay && selectedCell && selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
           <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl space-y-4">
@@ -127,32 +129,29 @@ export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
               <p className="text-xs text-slate-300 leading-relaxed">{selectedTask.description}</p>
             </div>
 
-            {/* Video Class Lesson Section */}
-            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                  <Play className="w-4 h-4 text-amber-400" /> {selectedTask.videoTitle}
-                </span>
-                <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
-                  ⏱ {selectedTask.videoDuration}
-                </span>
-              </div>
-              <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-800">
-                <iframe
-                  src={selectedTask.videoClassUrl}
-                  title={selectedTask.videoTitle}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </div>
+            {/* Guaranteed Active Video Player */}
+            <SaaSVideoPlayer
+              title={selectedTask.videoTitle}
+              duration={selectedTask.videoDuration}
+              youtubeUrl={selectedTask.videoClassUrl}
+            />
 
-            {/* Technical Notes Section */}
-            <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-1.5">
-              <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
-                <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Technical Lecture Notes
-              </h4>
+            {/* Technical Notes Section with PDF Export */}
+            <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
+                  <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Technical Lecture Notes
+                </h4>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => downloadPdfNotes(selectedTask)}
+                  className="text-[10px] font-bold gap-1 border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Export PDF Notes</span>
+                </Button>
+              </div>
               <p className="text-xs text-slate-300 leading-relaxed">{selectedTask.notes}</p>
             </div>
 
