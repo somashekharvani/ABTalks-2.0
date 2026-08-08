@@ -390,11 +390,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 # 🔗 Demo Links
 
+- **Live Production App (Vercel)**: [https://ab-talks-2-0.vercel.app](https://ab-talks-2-0.vercel.app)
+- **Live Dashboard Route**: [https://ab-talks-2-0.vercel.app/dashboard](https://ab-talks-2-0.vercel.app/dashboard)
+- **Live Day 12 Challenge Route**: [https://ab-talks-2-0.vercel.app/day/12](https://ab-talks-2-0.vercel.app/day/12)
 - **GitHub Repository**: [https://github.com/somashekharvani/ABTalks-2.0](https://github.com/somashekharvani/ABTalks-2.0)
 - **AI Usage Log**: [PROMPTS.md](https://github.com/somashekharvani/ABTalks-2.0/blob/main/PROMPTS.md)
-- **Live Public URL**: [https://poor-boxes-drum.loca.lt](https://poor-boxes-drum.loca.lt)
-- **Dashboard**: [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
-- **Challenge Day 12**: [http://localhost:3000/day/12](http://localhost:3000/day/12)
 
 ---
 
