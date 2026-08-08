@@ -2,19 +2,15 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, RefreshCw, BookOpen, Layers, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { TaskDetails } from '@/components/challenge/task-details';
 import { RequirementsChecklist } from '@/components/challenge/requirements-checklist';
 import { SubmissionForm } from '@/components/challenge/submission-form';
 import { PreviousSubmissionPreview } from '@/components/challenge/previous-submission';
 import { SubmissionStatus } from '@/components/challenge/submission-status';
-import { LessonView } from '@/components/learning/lesson-view';
 import { LinkedInGenerator } from '@/components/projects/linkedin-generator';
 import { storage } from '@/lib/storage';
-import { learningEngine } from '@/lib/learning-engine';
-import { assessmentEngine } from '@/lib/assessment-engine';
-import { projectEngine } from '@/lib/project-engine';
-import { Task, Submission, DashboardViewModel, Lesson, QuizAssessment, AssessmentResult, ProjectMilestone } from '@/types';
+import { Task, Submission, DashboardViewModel } from '@/types';
 import { TASKS } from '@/data/tasks';
 
 export default function ChallengeDayPage({ params }: { params: Promise<{ id: string }> }) {
@@ -23,10 +19,6 @@ export default function ChallengeDayPage({ params }: { params: Promise<{ id: str
 
   const [studentId, setStudentId] = useState<string>('student-b');
   const [task, setTask] = useState<Task | null>(null);
-  const [lesson, setLesson] = useState<Lesson | null>(null);
-  const [quiz, setQuiz] = useState<QuizAssessment | null>(null);
-  const [milestone, setMilestone] = useState<ProjectMilestone | null>(null);
-  const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | undefined>(undefined);
   const [submission, setSubmission] = useState<Submission | undefined>(undefined);
   const [viewModel, setViewModel] = useState<DashboardViewModel | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -34,19 +26,6 @@ export default function ChallengeDayPage({ params }: { params: Promise<{ id: str
   const reloadData = (activeId: string) => {
     const foundTask = TASKS.find((t) => t.day === dayNumber) || TASKS[11];
     setTask(foundTask);
-
-    const foundLesson = learningEngine.getLesson(dayNumber);
-    setLesson(foundLesson);
-
-    const foundQuiz = assessmentEngine.getQuiz(dayNumber);
-    setQuiz(foundQuiz);
-
-    const foundMilestone = projectEngine.getMilestoneForDay(dayNumber);
-    setMilestone(foundMilestone);
-
-    const foundResult = assessmentEngine.getAssessmentResult(activeId, dayNumber);
-    setAssessmentResult(foundResult);
-
 
     const subs = storage.getSubmissions(activeId);
     const existingSub = subs.find((s) => s.day === dayNumber);
@@ -65,15 +44,6 @@ export default function ChallengeDayPage({ params }: { params: Promise<{ id: str
     reloadData(activeId);
   }, [dayNumber]);
 
-  const handleLessonCompleted = () => {
-    learningEngine.markLessonCompleted(studentId, dayNumber);
-  };
-
-  const handleAssessmentPassed = (result: AssessmentResult) => {
-    setAssessmentResult(result);
-    reloadData(studentId);
-  };
-
   const handleOptimisticSubmit = (tempSubmission: Submission) => {
     setSubmission(tempSubmission);
   };
@@ -89,7 +59,7 @@ export default function ChallengeDayPage({ params }: { params: Promise<{ id: str
     setSubmission(existingSub);
   };
 
-  if (isLoading || !task || !lesson || !quiz || !milestone) {
+  if (isLoading || !task) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
         <RefreshCw className="w-8 h-8 text-amber-500 animate-spin" />
@@ -97,8 +67,6 @@ export default function ChallengeDayPage({ params }: { params: Promise<{ id: str
       </div>
     );
   }
-
-  const isBuildUnlocked = assessmentResult?.passed || (viewModel && (viewModel.journeyStage === 'PASSED' || viewModel.journeyStage === 'BUILD_UNLOCKED' || viewModel.journeyStage === 'VERIFIED')) || studentId === 'student-b' || studentId === 'student-c';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-16 animate-in fade-in duration-300">
@@ -126,54 +94,31 @@ export default function ChallengeDayPage({ params }: { params: Promise<{ id: str
         />
       )}
 
-      {/* Step 1: Daily Learning Experience (Video, Notes, Examples, 70% Passing Quiz) */}
-      <LessonView
-        lesson={lesson}
-        quiz={quiz}
-        assessmentResult={assessmentResult}
-        journeyStage={viewModel?.journeyStage || 'LESSON_NOT_STARTED'}
-        studentId={studentId}
-        onLessonCompleted={handleLessonCompleted}
-        onAssessmentPassed={handleAssessmentPassed}
-      />
-
-      {/* Step 2: Build Milestone Task Details */}
+      {/* Single Unified Challenge Details (Header, Video Class, Notes, Code Example, Score) */}
       <TaskDetails task={task} />
 
-      {/* Step 3: Main Grid: Checklist & Submission Form */}
+      {/* Acceptance Checklist & Code Submission Form */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <RequirementsChecklist requirements={milestone.requirements} />
+        <RequirementsChecklist requirements={task.requirements} />
 
         <div className="space-y-6">
-          {isBuildUnlocked ? (
-            <SubmissionForm
-              day={dayNumber}
-              studentId={studentId}
-              existingSubmission={submission}
-              onOptimisticSubmit={handleOptimisticSubmit}
-              onSuccess={handleSuccess}
-              onRollback={handleRollback}
-            />
-          ) : (
-            <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-center space-y-3">
-              <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 w-fit mx-auto">
-                <BookOpen className="w-6 h-6" />
-              </div>
-              <h4 className="text-base font-bold text-white">Complete Day {dayNumber} Assessment to Unlock Build</h4>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                Pass the 5-question assessment above with 70%+ score to unlock today's TaskFlow build task.
-              </p>
-            </div>
-          )}
+          <SubmissionForm
+            day={dayNumber}
+            studentId={studentId}
+            existingSubmission={submission}
+            onOptimisticSubmit={handleOptimisticSubmit}
+            onSuccess={handleSuccess}
+            onRollback={handleRollback}
+          />
 
-          {/* Step 4: LinkedIn Social Proof Post Generator */}
+          {/* Social Proof Post Generator */}
           <LinkedInGenerator
             studentName={viewModel?.student.name || 'Student'}
             day={dayNumber}
-            lessonTitle={lesson.title}
-            milestoneTitle={milestone.title}
-            githubUrl={`https://github.com/${studentId}/taskflow`}
-            concepts={lesson.concepts}
+            lessonTitle={task.title}
+            milestoneTitle={task.title}
+            githubUrl={`https://github.com/${studentId}/abtalks-day-${dayNumber}`}
+            concepts={[task.category, task.difficulty]}
           />
 
           {submission && submission.status === 'verified' && (
