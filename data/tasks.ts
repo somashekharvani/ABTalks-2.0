@@ -10,6 +10,7 @@ interface TopicDetail {
   codeExample: string;
   videoTitle: string;
   videoDuration: string;
+  videoClassUrl: string;
 }
 
 const TOPIC_CATALOG: Record<number, TopicDetail> = {
@@ -42,6 +43,7 @@ const TOPIC_CATALOG: Record<number, TopicDetail> = {
 </main>`,
     videoTitle: 'Class 1: HTML5 Semantics & Accessible DOM Architecture',
     videoDuration: '24:15',
+    videoClassUrl: 'https://www.youtube.com/embed/kUmD281n1T0?rel=0',
   },
   2: {
     title: 'CSS Grid & Modern Flexbox Layout Systems',
@@ -73,6 +75,7 @@ const TOPIC_CATALOG: Record<number, TopicDetail> = {
 }`,
     videoTitle: 'Class 2: Master CSS Grid Auto-Fit & Container Queries',
     videoDuration: '28:40',
+    videoClassUrl: 'https://www.youtube.com/embed/7kVeCqQCxlk?rel=0',
   },
   3: {
     title: 'JavaScript ES2024 Async Control & Event Loop',
@@ -98,6 +101,7 @@ async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 50
 }`,
     videoTitle: 'Class 3: Event Loop Microtasks & Concurrency Controls',
     videoDuration: '32:10',
+    videoClassUrl: 'https://www.youtube.com/embed/8aGhZQkoFbQ?rel=0',
   },
   4: {
     title: 'TypeScript Generics & Utility Type Mastery',
@@ -124,6 +128,7 @@ interface UserState {
 type ImmutableUserState = DeepReadonly<UserState>;`,
     videoTitle: 'Class 4: Advanced TypeScript Conditional Types & Infer',
     videoDuration: '35:20',
+    videoClassUrl: 'https://www.youtube.com/embed/nViEqp04wXC?rel=0',
   },
   5: {
     title: 'React 19 Server Components & Actions',
@@ -157,6 +162,7 @@ export function ChallengeSubmission({ currentStreak, submitAction }: { currentSt
 }`,
     videoTitle: 'Class 5: React 19 RSC, Actions & useOptimistic Mutations',
     videoDuration: '41:15',
+    videoClassUrl: 'https://www.youtube.com/embed/TQQPAU21ZUw?rel=0',
   },
   6: {
     title: 'Tailwind CSS v4 Custom Design System Tokens',
@@ -187,6 +193,7 @@ export function ChallengeSubmission({ currentStreak, submitAction }: { currentSt
 }`,
     videoTitle: 'Class 6: Tailwind CSS v4 CSS-First Design Systems',
     videoDuration: '22:50',
+    videoClassUrl: 'https://www.youtube.com/embed/mr15Xzb1Ook?rel=0',
   },
   7: {
     title: 'Next.js App Router Nested Layouts & Suspense',
@@ -217,6 +224,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 }`,
     videoTitle: 'Class 7: Next.js 15 App Router Architecture & Suspense',
     videoDuration: '34:10',
+    videoClassUrl: 'https://www.youtube.com/embed/vwSlYG7hFk0?rel=0',
   },
   8: {
     title: 'Zustand & Context API Global State Management',
@@ -250,6 +258,7 @@ export const useStreakStore = create<StreakStore>()(
 );`,
     videoTitle: 'Class 8: Zustand State Management & Store Architecture',
     videoDuration: '26:30',
+    videoClassUrl: 'https://www.youtube.com/embed/_qj71_Q9-uI?rel=0',
   },
   9: {
     title: 'RESTful API Route Handler Design & Validation',
@@ -279,6 +288,7 @@ export async function POST(request: Request) {
 }`,
     videoTitle: 'Class 9: REST API Design & Next.js Route Handlers',
     videoDuration: '30:45',
+    videoClassUrl: 'https://www.youtube.com/embed/-MTSQjw5DrM?rel=0',
   },
   10: {
     title: 'Zod Schema Parsing & Runtime Type Safety',
@@ -309,6 +319,7 @@ export const SubmissionSchema = z.object({
 export type SubmissionInput = z.infer<typeof SubmissionSchema>;`,
     videoTitle: 'Class 10: Runtime Type Safety with Zod Schema Validation',
     videoDuration: '27:15',
+    videoClassUrl: 'https://www.youtube.com/embed/L6BE-U3oy80?rel=0',
   },
   11: {
     title: 'Local Persistence & IndexedDB Sync Layer',
@@ -340,6 +351,7 @@ export const storageSync = {
 };`,
     videoTitle: 'Class 11: Offline-First IndexedDB & Client Persistence',
     videoDuration: '33:00',
+    videoClassUrl: 'https://www.youtube.com/embed/g4U5WRzHitM?rel=0',
   },
   12: {
     title: 'State Machine Streak Engine & Optimistic UI',
@@ -373,7 +385,41 @@ export function transitionState(current: StreakState, event: 'miss_day' | 'submi
 }`,
     videoTitle: 'Class 12: FSM Streak Engines & Optimistic Architecture',
     videoDuration: '38:50',
+    videoClassUrl: 'https://www.youtube.com/embed/m_g00jX2Wvw?rel=0',
   },
+};
+
+const CATEGORY_VIDEO_MAP: Record<Task['category'], string[]> = {
+  Frontend: [
+    'https://www.youtube.com/embed/kUmD281n1T0?rel=0',
+    'https://www.youtube.com/embed/7kVeCqQCxlk?rel=0',
+    'https://www.youtube.com/embed/8aGhZQkoFbQ?rel=0',
+    'https://www.youtube.com/embed/nViEqp04wXC?rel=0',
+    'https://www.youtube.com/embed/TQQPAU21ZUw?rel=0',
+    'https://www.youtube.com/embed/mr15Xzb1Ook?rel=0',
+    'https://www.youtube.com/embed/vwSlYG7hFk0?rel=0',
+  ],
+  Backend: [
+    'https://www.youtube.com/embed/-MTSQjw5DrM?rel=0',
+    'https://www.youtube.com/embed/L6BE-U3oy80?rel=0',
+    'https://www.youtube.com/embed/7Q17ubqLfaM?rel=0',
+    'https://www.youtube.com/embed/RebA5J-rlWg?rel=0',
+    'https://www.youtube.com/embed/jgpVd6Z40x4?rel=0',
+  ],
+  DevOps: [
+    'https://www.youtube.com/embed/3c-iBn73dDE?rel=0',
+    'https://www.youtube.com/embed/R8_veQiYBjI?rel=0',
+    'https://www.youtube.com/embed/g4U5WRzHitM?rel=0',
+  ],
+  'System Design': [
+    'https://www.youtube.com/embed/m_g00jX2Wvw?rel=0',
+    'https://www.youtube.com/embed/1BfCnjr_Vjg?rel=0',
+    'https://www.youtube.com/embed/eIQh0qcvzC4?rel=0',
+  ],
+  'AI Integration': [
+    'https://www.youtube.com/embed/lKKsjpH0lDU?rel=0',
+    'https://www.youtube.com/embed/TQQPAU21ZUw?rel=0',
+  ],
 };
 
 export const TASKS: Task[] = Array.from({ length: 60 }, (_, i) => {
@@ -392,19 +438,20 @@ export const TASKS: Task[] = Array.from({ length: 60 }, (_, i) => {
       estimatedHours: 3.5,
       notes: catalogItem.notes,
       codeExample: catalogItem.codeExample,
-      videoClassUrl: `https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0`,
+      videoClassUrl: catalogItem.videoClassUrl,
       videoTitle: catalogItem.videoTitle,
       videoDuration: catalogItem.videoDuration,
       score: 95 + (day % 5),
     };
   }
 
-  // Generic generator for days 13 to 60 with rich topic-specific notes & code
   const categories: Task['category'][] = ['Frontend', 'Backend', 'DevOps', 'System Design', 'AI Integration'];
   const difficulties: Task['difficulty'][] = ['Beginner', 'Intermediate', 'Advanced'];
   const cat = categories[(day - 1) % categories.length];
   const diff = difficulties[(day - 1) % difficulties.length];
   const title = getDayTitle(day);
+  const videoList = CATEGORY_VIDEO_MAP[cat];
+  const videoUrl = videoList[(day - 1) % videoList.length];
 
   return {
     day,
@@ -431,7 +478,7 @@ export async function executeDay${day}Module(payload: { day: number; timestamp: 
     score: ${92 + (day % 8)},
   };
 }`,
-    videoClassUrl: `https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0`,
+    videoClassUrl: videoUrl,
     videoTitle: `Class ${day}: Mastering ${title}`,
     videoDuration: `${20 + (day % 15)}:30`,
     score: 92 + (day % 8),
