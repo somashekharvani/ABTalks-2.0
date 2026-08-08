@@ -385,7 +385,7 @@ export function transitionState(current: StreakState, event: 'miss_day' | 'submi
 }`,
     videoTitle: 'Class 12: FSM Streak Engines & Optimistic Architecture',
     videoDuration: '38:50',
-    videoClassUrl: 'https://www.youtube.com/embed/m_g00jX2Wvw?rel=0',
+    videoClassUrl: 'https://www.youtube.com/embed/E45Ww1W93v4?rel=0',
   },
 };
 
@@ -412,7 +412,7 @@ const CATEGORY_VIDEO_MAP: Record<Task['category'], string[]> = {
     'https://www.youtube.com/embed/g4U5WRzHitM?rel=0',
   ],
   'System Design': [
-    'https://www.youtube.com/embed/m_g00jX2Wvw?rel=0',
+    'https://www.youtube.com/embed/E45Ww1W93v4?rel=0',
     'https://www.youtube.com/embed/1BfCnjr_Vjg?rel=0',
     'https://www.youtube.com/embed/eIQh0qcvzC4?rel=0',
   ],

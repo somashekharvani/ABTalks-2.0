@@ -12,7 +12,7 @@ interface SaaSVideoPlayerProps {
 export function SaaSVideoPlayer({ title, duration, youtubeUrl }: SaaSVideoPlayerProps) {
   const [embedFailed, setEmbedFailed] = useState(false);
 
-  const fallbackUrl = youtubeUrl || 'https://www.youtube.com/embed/m_g00jX2Wvw?rel=0';
+  const fallbackUrl = youtubeUrl || 'https://www.youtube.com/embed/E45Ww1W93v4?rel=0';
 
   return (
     <div className="rounded-2xl bg-slate-950/90 border border-slate-800 p-4 space-y-3 overflow-hidden shadow-2xl">
