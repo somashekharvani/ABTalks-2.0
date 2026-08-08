@@ -8,7 +8,7 @@ import {
 import { TASKS } from '@/data/tasks';
 import { ACHIEVEMENTS } from '@/data/achievements';
 import { storage } from '@/lib/storage';
-import { buildDashboardViewModel } from '@/lib/streak-engine';
+import { composeDashboardViewModel } from '@/lib/dashboard-composer';
 
 export async function getStudent(studentId?: string): Promise<Student> {
   const targetId = studentId || storage.getActiveStudentId();
@@ -40,7 +40,7 @@ export async function getDashboardData(
   const targetId = studentId || storage.getActiveStudentId();
   const student = storage.getStudent(targetId);
   const submissions = storage.getSubmissions(targetId);
-  return buildDashboardViewModel(student, submissions, recruiterView, targetDay);
+  return composeDashboardViewModel(student, submissions, recruiterView, targetDay);
 }
 
 export async function saveSubmission(
@@ -64,7 +64,7 @@ export async function saveSubmission(
 
   const student = storage.getStudent(studentId);
   const submissions = storage.getSubmissions(studentId);
-  const viewModel = buildDashboardViewModel(student, submissions);
+  const viewModel = composeDashboardViewModel(student, submissions);
 
   return { submission, viewModel };
 }

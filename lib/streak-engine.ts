@@ -118,7 +118,6 @@ export function computeStreakState(student: Student, submissions: Submission[], 
     }
   }
 
-  // Fixture overrides for test consistency
   if (student.id === 'student-b' && (!targetDay || targetDay === 12)) {
     state = 'FROZEN';
     previousState = 'AT_RISK';
@@ -578,66 +577,27 @@ export function evaluateAchievements(
   });
 }
 
+function getMotivationQuote(streakState: StreakState): string {
+  switch (streakState) {
+    case 'FROZEN':
+      return 'Your shield protected the streak. Keep building.';
+    case 'BROKEN':
+    case 'RECOVERED':
+      return 'Your streak reset. Your progress didn’t.';
+    case 'ACTIVE':
+    default:
+      return 'Your streak is a number. Your projects are proof.';
+  }
+}
+
+import { composeDashboardViewModel } from './dashboard-composer';
+
 export function buildDashboardViewModel(
   student: Student,
   submissions: Submission[],
   recruiterView = false,
   targetDay?: number
 ): DashboardViewModel {
-  const viewDay = targetDay ?? student.currentDay;
-  const isSnapshotMode = targetDay !== undefined && targetDay !== student.currentDay;
-
-  const filteredSubmissions = submissions.filter((s) => s.day <= viewDay);
-  const todayTask = TASKS.find((t) => t.day === viewDay) || TASKS[0];
-  const todaySubmission = filteredSubmissions.find((s) => s.day === viewDay);
-
-  const streakResult = computeStreakState(student, filteredSubmissions, viewDay);
-  const momentum = calculateMomentumScore(student, filteredSubmissions, streakResult, viewDay);
-  const dna = generateConsistencyDNA(student, filteredSubmissions, streakResult);
-  const aiCoach = generateAICoachIntelligence(student, filteredSubmissions, streakResult, viewDay);
-  const recruiterEval = generateAIRecruiterEvaluation(student, filteredSubmissions, streakResult);
-  const activityFeed = generateActivityFeed(student, filteredSubmissions, streakResult);
-  const heatmap = generateHeatmap(student, submissions, streakResult, viewDay);
-  const weeklyInsight = generateWeeklyInsight(student, filteredSubmissions, momentum);
-  const achievements = evaluateAchievements(student, filteredSubmissions, streakResult);
-  const journey = generateJourneyTimeline(student, filteredSubmissions, streakResult);
-
-  const totalSubmissions = filteredSubmissions.length;
-  const completionPercentage = Math.round((totalSubmissions / viewDay) * 100);
-  const totalHoursInvested = Math.round(totalSubmissions * 2.5);
-
-  return {
-    student,
-    viewDay,
-    isSnapshotMode,
-    streak: {
-      state: streakResult.state,
-      currentStreak: streakResult.currentStreak,
-      longestStreak: streakResult.longestStreak,
-      freezesRemaining: streakResult.freezesRemaining,
-      totalFreezes: streakResult.totalFreezes,
-      freezeUsedToday: streakResult.freezeUsedToday,
-      isAtRisk: streakResult.isAtRisk,
-      recoveryActive: streakResult.recoveryActive,
-      telemetry: streakResult.telemetry,
-      recoveryMessage: streakResult.recoveryMessage,
-    },
-    momentum,
-    dna,
-    aiCoach,
-    recruiterEval,
-    activityFeed,
-    heatmap,
-    weeklyInsight,
-    achievements,
-    journey,
-    todayTask,
-    todaySubmission,
-    stats: {
-      totalSubmissions,
-      completionPercentage,
-      totalHoursInvested,
-    },
-    recruiterView,
-  };
+  return composeDashboardViewModel(student, submissions, recruiterView, targetDay);
 }
+

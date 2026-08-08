@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { LayoutDashboard, Eye, User, Sparkles, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { RefreshCw, BookOpen, Layers, Trophy, Sparkles } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { SmartBanner } from '@/components/ui/smart-banner';
 import { StreakCard } from '@/components/dashboard/streak-card';
@@ -19,7 +18,13 @@ import { ConsistencyDNACard } from '@/components/dashboard/consistency-dna';
 import { AICoachIntelligenceCard } from '@/components/dashboard/ai-coach-intelligence';
 import { TimeMachineController } from '@/components/dashboard/time-machine';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
+import { NotificationBell } from '@/components/notifications/notification-bell';
+import { CourseTracks } from '@/components/learning/course-tracks';
+import { ProjectCard } from '@/components/projects/project-card';
+import { ProjectPortfolio } from '@/components/projects/project-portfolio';
 import { storage } from '@/lib/storage';
+import { notificationEngine } from '@/lib/notification-engine';
+import { COURSES } from '@/data/courses';
 import { DashboardViewModel } from '@/types';
 
 export default function DashboardPage() {
@@ -74,6 +79,16 @@ export default function DashboardPage() {
     fetchViewModel(studentId, recruiterView, undefined);
   };
 
+  const handleMarkAllNotificationsRead = () => {
+    if (!viewModel) return;
+    const updated = notificationEngine.markAllAsRead(studentId);
+    setViewModel({
+      ...viewModel,
+      notifications: updated,
+      unreadNotificationsCount: 0,
+    });
+  };
+
   if (isLoading || !viewModel) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
@@ -83,8 +98,16 @@ export default function DashboardPage() {
     );
   }
 
+  const handleSelectTrack = (trackTitle: string) => {
+    if (!viewModel) return;
+    const updatedStudent = { ...viewModel.student, track: trackTitle };
+    storage.saveStudent(updatedStudent);
+    fetchViewModel(studentId, recruiterView, targetDay);
+  };
+
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-300">
+
       {/* Top Controls Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
@@ -95,11 +118,18 @@ export default function DashboardPage() {
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Welcome back, <strong className="text-slate-200">{viewModel.student.name}</strong> • Pure FSM ViewModel State
+            Welcome back, <strong className="text-slate-200">{viewModel.student.name}</strong> • {viewModel.student.track} Track
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          {/* In-App Notification Center Bell */}
+          <NotificationBell
+            notifications={viewModel.notifications}
+            unreadCount={viewModel.unreadNotificationsCount}
+            onMarkAllRead={handleMarkAllNotificationsRead}
+          />
+
           <FixtureSwitcher currentStudentId={studentId} onSelectStudent={handleSelectStudent} />
 
           <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-900 border border-slate-800">
@@ -110,6 +140,15 @@ export default function DashboardPage() {
             />
           </div>
         </div>
+      </div>
+
+      {/* Contextual Motivation Quote Banner */}
+      <div className="p-3.5 rounded-2xl bg-slate-900 border border-amber-500/30 flex items-center justify-between gap-3 text-xs text-amber-300 font-semibold shadow-lg">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <span>"{viewModel.motivationQuote}"</span>
+        </div>
+        <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">Learn ➔ Assess ➔ Build ➔ Prove</span>
       </div>
 
       {/* Time Machine Snapshot Rewind Bar */}
@@ -126,11 +165,14 @@ export default function DashboardPage() {
 
       {recruiterView ? (
         /* Recruiter Mode View */
-        <RecruiterPreview viewModel={viewModel} />
+        <div className="space-y-6">
+          <RecruiterPreview viewModel={viewModel} />
+          <ProjectPortfolio completedProjects={viewModel.completedProjects} activeProject={viewModel.activeProject} />
+        </div>
       ) : (
         /* Student Mode View */
         <div className="space-y-6">
-          {/* FSM State Machine Interactive Diagram with System Telemetry */}
+          {/* FSM State Machine Interactive Diagram */}
           <FSMVisualizer currentState={viewModel.streak.state} telemetry={viewModel.streak.telemetry} />
 
           {/* AI Consistency Intelligence Engine */}
@@ -143,11 +185,48 @@ export default function DashboardPage() {
             <TaskCard task={viewModel.todayTask} submission={viewModel.todaySubmission} />
           </div>
 
+          {/* Current 7-Day Project & Course Learning Track */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <ProjectCard
+                project={viewModel.activeProject}
+                milestone={viewModel.activeMilestone}
+                currentDay={viewModel.viewDay}
+              />
+            </div>
+            <div className="space-y-4 p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-white flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-amber-400" /> Learning Progress
+                </span>
+                <span className="text-amber-400 font-mono font-bold">
+                  {viewModel.completedLessonsCount} / {viewModel.student.currentDay} Lessons
+                </span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                <div className="flex items-center justify-between text-slate-300 font-medium">
+                  <span>Assessments Passed:</span>
+                  <span className="text-emerald-400 font-bold">{viewModel.passedAssessmentsCount} / {viewModel.student.currentDay}</span>
+                </div>
+                <div className="flex items-center justify-between text-slate-300 font-medium pt-1 border-t border-slate-900">
+                  <span>Projects Built:</span>
+                  <span className="text-purple-300 font-bold">{viewModel.completedProjects.length + 1} Projects</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Course Tracks */}
+          <CourseTracks courses={COURSES} activeCourseId={viewModel.activeCourse.id} onSelectTrack={handleSelectTrack} />
+
           {/* Consistency DNA */}
           <ConsistencyDNACard dna={viewModel.dna} />
 
           {/* Heatmap Section */}
           <Heatmap cells={viewModel.heatmap} currentDay={viewModel.viewDay} onSelectDay={handleSelectTimeMachineDay} />
+
+          {/* Project Portfolio */}
+          <ProjectPortfolio completedProjects={viewModel.completedProjects} activeProject={viewModel.activeProject} />
 
           {/* Lower Grid: Achievements, Journey Timeline & Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

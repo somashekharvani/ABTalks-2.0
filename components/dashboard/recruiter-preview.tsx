@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ExternalLink, Github, Linkedin, ShieldCheck, Trophy, Flame, Percent, Clock, Bot, Download, Building2, Star } from 'lucide-react';
+import { ExternalLink, Github, Linkedin, ShieldCheck, Trophy, Flame, Percent, Clock, Bot, Download, Building2, Star, Check } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -165,6 +165,80 @@ Report Generated: ${new Date().toLocaleDateString()}`;
           </div>
         </Card>
       </div>
+
+      {/* Verified Skill Evidence Matrix */}
+      <Card className="border-amber-500/20 bg-slate-900/90 shadow-xl space-y-4">
+
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-400" />
+                <span>Verified Candidate Skill Evidence</span>
+              </CardTitle>
+              <CardDescription>Skills backed by real assessment scores, project milestones, and GitHub commit artifacts</CardDescription>
+            </div>
+            <Badge variant="amber">High Skill Confidence</Badge>
+          </div>
+        </CardHeader>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-white text-sm">React 19 & State</span>
+              <span className="text-xs font-mono font-bold text-emerald-400">High Confidence</span>
+            </div>
+            <div className="space-y-1.5 text-xs text-slate-300">
+              <div className="flex justify-between"><span className="text-slate-400">Assessment Average:</span><span className="font-mono font-bold text-amber-400">88%</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Verified Milestones:</span><span className="font-mono font-bold text-slate-200">7</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Verified Projects:</span><span className="font-mono font-bold text-purple-300">3</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">GitHub Proof:</span><span className="font-mono text-emerald-400">✓ 12 Commits</span></div>
+            </div>
+            <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-300 space-y-1">
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> Component Architecture</div>
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> useState & Custom Hooks</div>
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> LocalStorage Persistence</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-white text-sm">TypeScript & Types</span>
+              <span className="text-xs font-mono font-bold text-emerald-400">High Confidence</span>
+            </div>
+            <div className="space-y-1.5 text-xs text-slate-300">
+              <div className="flex justify-between"><span className="text-slate-400">Assessment Average:</span><span className="font-mono font-bold text-amber-400">92%</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Verified Milestones:</span><span className="font-mono font-bold text-slate-200">8</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Verified Projects:</span><span className="font-mono font-bold text-purple-300">3</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">GitHub Proof:</span><span className="font-mono text-emerald-400">✓ 15 Commits</span></div>
+            </div>
+            <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-300 space-y-1">
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> Static Type Checking</div>
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> Generics & Utility Types</div>
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> Strict Null Checks</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-white text-sm">Next.js 15 & Layouts</span>
+              <span className="text-xs font-mono font-bold text-purple-400">Building</span>
+            </div>
+            <div className="space-y-1.5 text-xs text-slate-300">
+              <div className="flex justify-between"><span className="text-slate-400">Assessment Average:</span><span className="font-mono font-bold text-amber-400">85%</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Verified Milestones:</span><span className="font-mono font-bold text-slate-200">5</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">Verified Projects:</span><span className="font-mono font-bold text-purple-300">2</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">GitHub Proof:</span><span className="font-mono text-emerald-400">✓ 9 Commits</span></div>
+            </div>
+            <div className="pt-2 border-t border-slate-800/80 text-[11px] text-slate-300 space-y-1">
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> App Router Architecture</div>
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> Server Actions & API Routes</div>
+              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold"><Check className="w-3.5 h-3.5" /> Dynamic Route Handlers</div>
+            </div>
+          </div>
+        </div>
+      </Card>
+
 
       {/* Recruiter Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

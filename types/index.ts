@@ -2,6 +2,18 @@ export type StreakState = 'ACTIVE' | 'AT_RISK' | 'FROZEN' | 'BROKEN' | 'RECOVERE
 
 export type HeatmapStatus = 'verified' | 'submitted' | 'frozen' | 'missed' | 'today' | 'future';
 
+export type DailyJourneyStage =
+  | 'LESSON_NOT_STARTED'
+  | 'LEARNING'
+  | 'LESSON_COMPLETED'
+  | 'ASSESSMENT'
+  | 'PASSED'
+  | 'BUILD_UNLOCKED'
+  | 'BUILD_IN_PROGRESS'
+  | 'PROOF_SUBMITTED'
+  | 'VERIFIED'
+  | 'DAY_COMPLETED';
+
 export interface Student {
   id: string;
   name: string;
@@ -16,6 +28,121 @@ export interface Student {
   currentDay: number;
 }
 
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswerIndex: number;
+  explanation: string;
+}
+
+export interface QuizAssessment {
+  id: string;
+  lessonId: string;
+  day: number;
+  title: string;
+  passingScorePercent: number; // default 70
+  questions: QuizQuestion[];
+}
+
+export interface AssessmentResult {
+  assessmentId: string;
+  scorePercent: number;
+  passed: boolean;
+  correctCount: number;
+  totalQuestions: number;
+  submittedAt: string;
+}
+
+export interface Lesson {
+  id: string;
+  courseId: string;
+  moduleId: string;
+  day: number;
+  title: string;
+  description: string;
+  durationMinutes: number;
+  videoUrl: string;
+  notes: string;
+  concepts: string[];
+  examples: { title: string; code: string }[];
+  quizId: string;
+  projectMilestoneId: string;
+}
+
+export interface CourseModule {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  startDay: number;
+  endDay: number;
+  projectId: string;
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  durationDays: number;
+  totalProjects: number;
+  badgeIcon: string;
+}
+
+export interface ProjectMilestone {
+  id: string;
+  projectId: string;
+  day: number;
+  title: string;
+  description: string;
+  requirements: string[];
+  estimatedMinutes: number;
+  requiredConcepts: string[];
+}
+
+export interface Project {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  durationDays: number; // e.g., 7 or 14
+  startDay: number;
+  endDay: number;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  repositoryUrl: string;
+  liveUrl?: string;
+  techStack: string[];
+}
+
+export type NotificationType =
+  | 'LESSON_AVAILABLE'
+  | 'LESSON_COMPLETED'
+  | 'ASSESSMENT_AVAILABLE'
+  | 'ASSESSMENT_PASSED'
+  | 'ASSESSMENT_FAILED'
+  | 'BUILD_UNLOCKED'
+  | 'PROJECT_MILESTONE'
+  | 'SUBMISSION_PENDING'
+  | 'SUBMISSION_VERIFIED'
+  | 'STREAK_AT_RISK'
+  | 'FREEZE_CONSUMED'
+  | 'STREAK_BROKEN'
+  | 'RECOVERY_AVAILABLE'
+  | 'BADGE_UNLOCKED'
+  | 'PROJECT_COMPLETED';
+
+export interface NotificationItem {
+  id: string;
+  timestamp: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  read: boolean;
+  link?: string;
+}
+
 export interface Task {
   day: number;
   title: string;
@@ -25,6 +152,12 @@ export interface Task {
   requirements: string[];
   githubTemplate: string;
   estimatedHours: number;
+  notes: string;
+  codeExample: string;
+  videoClassUrl: string;
+  videoTitle: string;
+  videoDuration: string;
+  score: number;
 }
 
 export interface Submission {
@@ -64,11 +197,11 @@ export interface MomentumScore {
 }
 
 export interface ConsistencyDNA {
-  discipline: number; // 0-100
-  velocity: number;   // 0-100
-  focus: number;      // 0-100
-  recovery: number;   // 0-100
-  reliability: number;// 0-100
+  discipline: number;
+  velocity: number;
+  focus: number;
+  recovery: number;
+  reliability: number;
   archetype: 'The Marathon Builder' | 'The Tactical Strategist' | 'The Phoenix Resurgent' | 'The Vanguard Scholar';
   summary: string;
 }
@@ -132,6 +265,20 @@ export interface DashboardViewModel {
   student: Student;
   viewDay: number;
   isSnapshotMode: boolean;
+  journeyStage: DailyJourneyStage;
+  activeCourse: Course;
+  activeProject: Project;
+  activeMilestone: ProjectMilestone;
+  activeLesson: Lesson;
+  activeQuiz: QuizAssessment;
+  activeAssessmentResult?: AssessmentResult;
+  completedLessonsCount: number;
+  passedAssessmentsCount: number;
+  completedProjects: Project[];
+  notifications: NotificationItem[];
+  unreadNotificationsCount: number;
+  motivationQuote: string;
+
   streak: {
     state: StreakState;
     currentStreak: number;

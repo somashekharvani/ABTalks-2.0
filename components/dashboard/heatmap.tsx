@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ExternalLink, Github, Linkedin, ShieldCheck, Snowflake, Flame, ArrowRight, X, Calendar, Lock, AlertTriangle, RefreshCw } from 'lucide-react';
+import { ExternalLink, Github, Linkedin, ShieldCheck, Snowflake, Flame, ArrowRight, X, Calendar, Play, Code2, BookOpen, Star } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tooltip } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
@@ -54,10 +54,10 @@ export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
         <CardHeader className="mb-3">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <span>60-Day Submission Heatmap & Historical Day Inspector</span>
+              <span>60-Day Submission Heatmap</span>
               <span className="text-xs font-normal text-slate-400">Day {currentDay} of 60</span>
             </CardTitle>
-            <CardDescription>Click any day cell to inspect detailed challenge record, state transitions, proof links, and snapshot telemetry</CardDescription>
+            <CardDescription>Click any past or active day cell to open the day's technical notes, code examples, video class, and score record</CardDescription>
           </div>
 
           {/* Heatmap Legend */}
@@ -100,22 +100,26 @@ export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
         </div>
       </Card>
 
-      {/* Selected Day Inspector Modal */}
+      {/* Day Inspector Modal with Video Class, Technical Notes, Code Example, & Score */}
       {selectedCellDay && selectedCell && selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg p-6 rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl space-y-4">
             <button
               onClick={() => setSelectedCellDay(null)}
-              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors z-10"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2">
-              <Badge variant={selectedCell.status === 'verified' ? 'green' : selectedCell.status === 'frozen' ? 'blue' : selectedCell.status === 'missed' ? 'red' : 'amber'}>
-                DAY {selectedCell.day} INSPECTOR
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant={selectedCell.status === 'verified' ? 'green' : selectedCell.status === 'frozen' ? 'blue' : 'amber'}>
+                Day {selectedCell.day} Record
               </Badge>
-              <Badge variant="outline">{selectedCell.status.toUpperCase()}</Badge>
+              <Badge variant="default">{selectedTask.category}</Badge>
+              <Badge variant="purple">{selectedTask.difficulty}</Badge>
+              <Badge variant="outline" className="ml-auto font-mono text-amber-400">
+                Score: {selectedTask.score}/100 ⭐
+              </Badge>
             </div>
 
             <div className="space-y-1">
@@ -123,23 +127,56 @@ export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
               <p className="text-xs text-slate-300 leading-relaxed">{selectedTask.description}</p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3 text-xs">
-              <div className="flex items-center justify-between text-slate-400 border-b border-slate-800 pb-2">
-                <span>Category: <strong className="text-slate-200">{selectedTask.category}</strong></span>
-                <span>Difficulty: <strong className="text-slate-200">{selectedTask.difficulty}</strong></span>
+            {/* Video Class Lesson Section */}
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                  <Play className="w-4 h-4 text-amber-400" /> {selectedTask.videoTitle}
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
+                  ⏱ {selectedTask.videoDuration}
+                </span>
               </div>
+              <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-800">
+                <iframe
+                  src={selectedTask.videoClassUrl}
+                  title={selectedTask.videoTitle}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
 
-              {selectedCell.status === 'verified' && (
-                <div className="space-y-2">
+            {/* Technical Notes Section */}
+            <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-1.5">
+              <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
+                <BookOpen className="w-3.5 h-3.5 text-amber-400" /> Technical Lecture Notes
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed">{selectedTask.notes}</p>
+            </div>
+
+            {/* Code Example Section */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <h4 className="text-xs font-bold text-blue-300 flex items-center gap-1.5 uppercase tracking-wider">
+                <Code2 className="w-3.5 h-3.5 text-blue-400" /> Day-Specific Code Example
+              </h4>
+              <pre className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-slate-200 overflow-x-auto leading-relaxed">
+                <code>{selectedTask.codeExample}</code>
+              </pre>
+            </div>
+
+            {/* Verified Submissions & Proof Links */}
+            <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2 text-xs">
+              <h4 className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Proof of Work Submission Status
+              </h4>
+
+              {selectedCell.status === 'verified' ? (
+                <div className="space-y-2 pt-1 border-t border-slate-800">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-400 font-medium flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Challenge Proof Status:
-                    </span>
-                    <span className="text-emerald-400 font-bold">✓ Verified</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-400 font-medium flex items-center gap-1.5">
-                      <Github className="w-3.5 h-3.5 text-white" /> GitHub Repository:
+                      <Github className="w-3.5 h-3.5 text-white" /> Repository Proof:
                     </span>
                     <a
                       href={`https://github.com/abtalks-student/day-${selectedCell.day}`}
@@ -164,79 +201,29 @@ export function Heatmap({ cells, currentDay, onSelectDay }: HeatmapProps) {
                     </a>
                   </div>
                 </div>
-              )}
-
-              {selectedCell.status === 'frozen' && (
-                <div className="space-y-1.5 text-blue-300">
-                  <div className="flex items-center gap-2 font-bold">
-                    <Snowflake className="w-4 h-4 text-blue-400" />
-                    <span>STATE: FROZEN</span>
-                  </div>
-                  <p className="text-[11px] text-slate-300">
-                    EVENT: Tactical Shield consumed on Day {selectedCell.day}. Streak preserved at {selectedCell.day} days.
-                  </p>
+              ) : selectedCell.status === 'frozen' ? (
+                <div className="pt-2 border-t border-slate-800 text-blue-300 flex items-center gap-2">
+                  <Snowflake className="w-4 h-4 text-blue-400" />
+                  <span>Missed day protected by Tactical Freeze shield. Streak preserved at 11 days.</span>
                 </div>
-              )}
-
-              {selectedCell.status === 'missed' && (
-                <div className="space-y-1.5 text-rose-300">
-                  <div className="flex items-center gap-2 font-bold">
-                    <AlertTriangle className="w-4 h-4 text-rose-400" />
-                    <span>STATE: BROKEN</span>
-                  </div>
-                  <p className="text-[11px] text-slate-300">
-                    IMPACT: Missed submission window without available freeze. Streak reset.
-                  </p>
-                  <p className="text-[11px] text-purple-300 font-semibold">
-                    RECOVERY: Non-punitive Recovery Path available.
-                  </p>
-                </div>
-              )}
-
-              {selectedCell.status === 'future' && (
-                <div className="space-y-1 text-slate-400">
-                  <div className="flex items-center gap-2 font-bold text-slate-300">
-                    <Lock className="w-4 h-4 text-slate-500" />
-                    <span>DAY {selectedCell.day} · LOCKED</span>
-                  </div>
-                  <p className="text-[11px]">
-                    Available in {selectedCell.day - currentDay} days. Complete active challenges to unlock.
-                  </p>
-                </div>
-              )}
-
-              {selectedCell.status === 'today' && (
-                <div className="space-y-1 text-amber-300">
-                  <div className="flex items-center gap-2 font-bold">
-                    <Flame className="w-4 h-4 text-amber-400 animate-bounce" />
-                    <span>TODAY'S ACTIVE CHALLENGE</span>
-                  </div>
-                  <p className="text-[11px] text-slate-300">
-                    Ready to submit! Submit code proof before midnight to maintain momentum.
-                  </p>
+              ) : (
+                <div className="pt-2 border-t border-slate-800 text-amber-300 flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-amber-400" />
+                  <span>Challenge ready to be completed and submitted.</span>
                 </div>
               )}
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
               <Button variant="secondary" size="sm" onClick={() => setSelectedCellDay(null)}>
-                Close Inspector
+                Close Record
               </Button>
-              {selectedCell.status === 'missed' ? (
-                <Link href={`/day/${selectedCell.day}`}>
-                  <Button size="sm" variant="primary" className="font-bold gap-1 bg-purple-600 hover:bg-purple-500 text-white">
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    <span>Begin Recovery</span>
-                  </Button>
-                </Link>
-              ) : (
-                <Link href={`/day/${selectedCell.day}`}>
-                  <Button size="sm" className="font-bold gap-1">
-                    <span>Open Day {selectedCell.day} Page</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </Link>
-              )}
+              <Link href={`/day/${selectedCell.day}`}>
+                <Button size="sm" className="font-bold gap-1">
+                  <span>Open Day {selectedCell.day} Page</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
