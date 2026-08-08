@@ -43,7 +43,7 @@ const TOPIC_CATALOG: Record<number, TopicDetail> = {
 </main>`,
     videoTitle: 'Class 1: HTML5 Semantics & Accessible DOM Architecture',
     videoDuration: '24:15',
-    videoClassUrl: 'https://www.youtube.com/embed/kUmD281n1T0?rel=0',
+    videoClassUrl: 'https://www.youtube.com/embed/mJgBOIoGihA?rel=0',
   },
   2: {
     title: 'CSS Grid & Modern Flexbox Layout Systems',
@@ -391,7 +391,7 @@ export function transitionState(current: StreakState, event: 'miss_day' | 'submi
 
 const CATEGORY_VIDEO_MAP: Record<Task['category'], string[]> = {
   Frontend: [
-    'https://www.youtube.com/embed/kUmD281n1T0?rel=0',
+    'https://www.youtube.com/embed/mJgBOIoGihA?rel=0',
     'https://www.youtube.com/embed/7kVeCqQCxlk?rel=0',
     'https://www.youtube.com/embed/8aGhZQkoFbQ?rel=0',
     'https://www.youtube.com/embed/nViEqp04wXC?rel=0',
