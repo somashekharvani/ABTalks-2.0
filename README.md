@@ -390,10 +390,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 # 🔗 Demo Links
 
+- **GitHub Repository**: [https://github.com/somashekharvani/ABTalks-2.0](https://github.com/somashekharvani/ABTalks-2.0)
+- **AI Usage Log**: [PROMPTS.md](https://github.com/somashekharvani/ABTalks-2.0/blob/main/PROMPTS.md)
 - **Live Public URL**: [https://poor-boxes-drum.loca.lt](https://poor-boxes-drum.loca.lt)
 - **Dashboard**: [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
 - **Challenge Day 12**: [http://localhost:3000/day/12](http://localhost:3000/day/12)
-- **AI Usage Log**: [PROMPTS.md](file:///e:/ABTalks/PROMPTS.md)
 
 ---
 
