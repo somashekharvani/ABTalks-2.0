@@ -14,6 +14,7 @@ import { JourneyTimeline } from '@/components/dashboard/journey-timeline';
 import { RecruiterPreview } from '@/components/dashboard/recruiter-preview';
 import { FixtureSwitcher } from '@/components/dashboard/fixture-switcher';
 import { FSMVisualizer } from '@/components/dashboard/fsm-visualizer';
+import { FSMPlayground } from '@/components/dashboard/fsm-playground';
 import { ConsistencyDNACard } from '@/components/dashboard/consistency-dna';
 import { AICoachIntelligenceCard } from '@/components/dashboard/ai-coach-intelligence';
 import { TimeMachineController } from '@/components/dashboard/time-machine';
@@ -174,6 +175,9 @@ export default function DashboardPage() {
         <div className="space-y-6">
           {/* FSM State Machine Interactive Diagram */}
           <FSMVisualizer currentState={viewModel.streak.state} telemetry={viewModel.streak.telemetry} />
+
+          {/* Interactive FSM Evaluator Playground */}
+          <FSMPlayground />
 
           {/* AI Consistency Intelligence Engine */}
           <AICoachIntelligenceCard aiCoach={viewModel.aiCoach} />
