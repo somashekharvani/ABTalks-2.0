@@ -4,7 +4,7 @@
 
 ABTalks 2.0 is a mobile-first developer consistency platform designed to help students maintain momentum throughout a daily coding challenge.
 
-![ABTalks 2.0 Landing Page](https://raw.githubusercontent.com/somashekharvani/ABTalks-2.0/main/public/assets/images/landing_page.png)
+![ABTalks 2.0 Landing Page](https://raw.githubusercontent.com/somashekharvani/ABTalks-2.0/main/public/assets/images/landing_page.jpg)
 
 Instead of treating a missed day as the end of progress, ABTalks uses a **deterministic Finite State Machine (FSM)** to model consistency, protect streaks through Tactical Shields, and provide a non-punitive Recovery Path when a streak is broken.
 
@@ -74,7 +74,7 @@ RECOVER WHEN NECESSARY
 SHOWCASE PROGRESS
 ```
 
-![Learning → Assessment → Project Flow](https://raw.githubusercontent.com/somashekharvani/ABTalks-2.0/main/public/assets/images/learning_project_flow.png)
+![Learning → Assessment → Project Flow](https://raw.githubusercontent.com/somashekharvani/ABTalks-2.0/main/public/assets/images/learning_project_flow.jpg)
 
 The core of the platform is a deterministic consistency engine.
 
@@ -315,7 +315,7 @@ The dashboard provides a complete view of the student's challenge journey with a
 - **Proof**: Verified GitHub repository & LinkedIn post link
 - **Consistency**: Streak, state, freeze/recovery details
 
-![Consistency Dashboard](https://raw.githubusercontent.com/somashekharvani/ABTalks-2.0/main/public/assets/images/consistency_dashboard.png)
+![Consistency Dashboard](https://raw.githubusercontent.com/somashekharvani/ABTalks-2.0/main/public/assets/images/consistency_dashboard.jpg)
 
 ---
 
