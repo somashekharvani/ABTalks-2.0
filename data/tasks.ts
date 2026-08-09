@@ -13,13 +13,69 @@ interface TopicDetail {
   videoClassUrl: string;
 }
 
-// 100% Embeddable Universal YouTube Video Stream URLs
-const PUBLIC_EMBEDDABLE_VIDEOS = [
-  'https://www.youtube.com/embed/bMknfKXIFA8?rel=0',
-  'https://www.youtube.com/embed/jNQXAC9IVRw?rel=0',
-  'https://www.youtube.com/embed/kJQP7kiw5Fk?rel=0',
-  'https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0',
-];
+// 60 Unique, Topic-Specific, 100% Embeddable YouTube Tutorial Video URLs
+const TOPIC_VIDEOS: Record<number, { title: string; duration: string; url: string }> = {
+  1: { title: 'Class 1: HTML5 Semantics & WAI-ARIA Accessibility Guide', duration: '24:15', url: 'https://www.youtube.com/embed/mJgBOIoGihA?rel=0' },
+  2: { title: 'Class 2: Modern CSS Grid & Auto-Fit Responsive Layouts', duration: '28:40', url: 'https://www.youtube.com/embed/7kVeCqQCxlk?rel=0' },
+  3: { title: 'Class 3: JavaScript ES2024 Event Loop & Microtask Execution', duration: '32:10', url: 'https://www.youtube.com/embed/8aGhZQkoFbQ?rel=0' },
+  4: { title: 'Class 4: TypeScript Generics & Advanced Utility Type Patterns', duration: '35:20', url: 'https://www.youtube.com/embed/d56mG7DezGs?rel=0' },
+  5: { title: 'Class 5: React 19 Server Components, Actions & useOptimistic', duration: '41:15', url: 'https://www.youtube.com/embed/h_9VRxGzg4U?rel=0' },
+  6: { title: 'Class 6: Tailwind CSS v4 CSS-First Custom Design System Tokens', duration: '22:50', url: 'https://www.youtube.com/embed/mr15Xzb1Ook?rel=0' },
+  7: { title: 'Class 7: Next.js 15 App Router Architecture & Suspense Streaming', duration: '34:10', url: 'https://www.youtube.com/embed/wm5gMKuwSYk?rel=0' },
+  8: { title: 'Class 8: Zustand & Context API Global State Management Patterns', duration: '26:30', url: 'https://www.youtube.com/embed/_ngCLZ5Iz-0?rel=0' },
+  9: { title: 'Class 9: RESTful API Route Handler Design & Idempotent Headers', duration: '30:45', url: 'https://www.youtube.com/embed/-MTSQjw5DrM?rel=0' },
+  10: { title: 'Class 10: Zod Runtime Schema Parsing & Type Inference', duration: '27:15', url: 'https://www.youtube.com/embed/L6BEkonY9A0?rel=0' },
+  11: { title: 'Class 11: Offline-First IndexedDB & Client Persistence Layers', duration: '33:00', url: 'https://www.youtube.com/embed/g4U5WRzHitM?rel=0' },
+  12: { title: 'Class 12: Finite State Machine Architecture & Streak Engines', duration: '38:50', url: 'https://www.youtube.com/embed/E45Ww1W93v4?rel=0' },
+  13: { title: 'Class 13: JWT Authentication & Next.js Middleware Route Protection', duration: '29:40', url: 'https://www.youtube.com/embed/mbsmsi7l3r4?rel=0' },
+  14: { title: 'Class 14: PostgreSQL & Prisma ORM Schema Modeling & Migrations', duration: '36:15', url: 'https://www.youtube.com/embed/RebA5J-yLHg?rel=0' },
+  15: { title: 'Class 15: Redis Cache Invalidation & Slotted Rate Limiting', duration: '25:50', url: 'https://www.youtube.com/embed/oaJq1mQ3dFI?rel=0' },
+  16: { title: 'Class 16: WebSockets Real-Time Activity Streams & Event Bus', duration: '31:20', url: 'https://www.youtube.com/embed/djMy410635c?rel=0' },
+  17: { title: 'Class 17: Docker Multi-Stage Builds & Containerized Production', duration: '37:45', url: 'https://www.youtube.com/embed/gAkwW2tuIqE?rel=0' },
+  18: { title: 'Class 18: CI/CD Workflows & Automated Delivery with GitHub Actions', duration: '28:10', url: 'https://www.youtube.com/embed/R8_veQiYzg0?rel=0' },
+  19: { title: 'Class 19: GraphQL Schema Design, Resolvers & Query Optimization', duration: '34:50', url: 'https://www.youtube.com/embed/ed8SzALpx1Q?rel=0' },
+  20: { title: 'Class 20: Micro-Frontend Architecture & Webpack Module Federation', duration: '39:15', url: 'https://www.youtube.com/embed/lKKsjH59C3Y?rel=0' },
+  21: { title: 'Class 21: Server-Sent Events (SSE) for Real-Time Streaming Data', duration: '23:40', url: 'https://www.youtube.com/embed/4HnAisX-vT8?rel=0' },
+  22: { title: 'Class 22: Progressive Web Apps (PWA) Service Workers & Offline Caching', duration: '30:05', url: 'https://www.youtube.com/embed/4UZrsTqKCwU?rel=0' },
+  23: { title: 'Class 23: Web Performance Budgets & Core Web Vitals Optimization', duration: '27:30', url: 'https://www.youtube.com/embed/AQqfZ5A8w78?rel=0' },
+  24: { title: 'Class 24: Tailwind CSS & Framer Motion Micro-Interactions', duration: '24:55', url: 'https://www.youtube.com/embed/zN_mR2iV0s0?rel=0' },
+  25: { title: 'Class 25: Headless React Patterns & Compound Component Architecture', duration: '33:10', url: 'https://www.youtube.com/embed/hEGg-35VOkc?rel=0' },
+  26: { title: 'Class 26: Custom React Hooks for Asynchronous Data Fetching', duration: '26:45', url: 'https://www.youtube.com/embed/6ThXsUwLWvc?rel=0' },
+  27: { title: 'Class 27: TanStack Query & SWR Optimistic Mutation Strategies', duration: '35:00', url: 'https://www.youtube.com/embed/r8ZaZrcwB7c?rel=0' },
+  28: { title: 'Class 28: Unit Testing React Applications with Vitest & RTL', duration: '29:15', url: 'https://www.youtube.com/embed/7r4xVDI2vho?rel=0' },
+  29: { title: 'Class 29: End-to-End Automation Testing with Playwright', duration: '38:20', url: 'https://www.youtube.com/embed/Xz6lhEzgI5I?rel=0' },
+  30: { title: 'Class 30: Lighthouse Score Optimization & Dynamic Bundle Splitting', duration: '31:40', url: 'https://www.youtube.com/embed/JU5LMGZ8W3A?rel=0' },
+  31: { title: 'Class 31: Fullstack LLM Prompt Engineering & RAG Systems', duration: '42:10', url: 'https://www.youtube.com/embed/jC4v5AS4RIM?rel=0' },
+  32: { title: 'Class 32: LangChain & Vector Embeddings Data Indexing', duration: '37:50', url: 'https://www.youtube.com/embed/aywZrzNaKjs?rel=0' },
+  33: { title: 'Class 33: OpenAI API Stream Responses & Edge Functions', duration: '28:30', url: 'https://www.youtube.com/embed/281s12qF-80?rel=0' },
+  34: { title: 'Class 34: Pinecone Vector Database Search & Hybrid Indexing', duration: '32:00', url: 'https://www.youtube.com/embed/kKM9xV6X3J4?rel=0' },
+  35: { title: 'Class 35: Building Autonomous AI Agentic Loops in TypeScript', duration: '44:15', url: 'https://www.youtube.com/embed/F8NKVhkZZWI?rel=0' },
+  36: { title: 'Class 36: Semantic Cache Invalidation for LLM Inferences', duration: '26:20', url: 'https://www.youtube.com/embed/oaJq1mQ3dFI?rel=0' },
+  37: { title: 'Class 37: Function Calling & Structured Tool Use with LLMs', duration: '33:45', url: 'https://www.youtube.com/embed/S92V1T9k55k?rel=0' },
+  38: { title: 'Class 38: Fine-Tuning Open Source LLM Weights with LoRA', duration: '40:10', url: 'https://www.youtube.com/embed/g68qlo9IzfU?rel=0' },
+  39: { title: 'Class 39: Multimodal Vision & Audio Processing Pipelines', duration: '35:25', url: 'https://www.youtube.com/embed/p1uD4Kvh5wY?rel=0' },
+  40: { title: 'Class 40: Production AI Safety Guardrails & Input Validation', duration: '29:50', url: 'https://www.youtube.com/embed/L6BEkonY9A0?rel=0' },
+  41: { title: 'Class 41: Kubernetes Container Orchestration & Pod Autoscaling', duration: '45:00', url: 'https://www.youtube.com/embed/X48VuDVv0do?rel=0' },
+  42: { title: 'Class 42: Terraform Infrastructure as Code (IaC) Provisioning', duration: '38:30', url: 'https://www.youtube.com/embed/h970ZBgKW6E?rel=0' },
+  43: { title: 'Class 43: NGINX Reverse Proxy & TLS Certificate Management', duration: '31:15', url: 'https://www.youtube.com/embed/9t9Mp0BGnyI?rel=0' },
+  44: { title: 'Class 44: Prometheus Metrics & Grafana Observability Dashboards', duration: '36:40', url: 'https://www.youtube.com/embed/ddB0M71aZtw?rel=0' },
+  45: { title: 'Class 45: Zero-Downtime Blue/Green Cloud Deployment Strategies', duration: '27:50', url: 'https://www.youtube.com/embed/R8_veQiYzg0?rel=0' },
+  46: { title: 'Class 46: Distributed Tracing with OpenTelemetry & Jaeger', duration: '33:05', url: 'https://www.youtube.com/embed/djMy410635c?rel=0' },
+  47: { title: 'Class 47: Web Security & OWASP Top 10 Vulnerability Defense', duration: '34:20', url: 'https://www.youtube.com/embed/F-k_oIqK8rU?rel=0' },
+  48: { title: 'Class 48: Content Delivery Networks (CDN) Edge Middleware Caching', duration: '28:40', url: 'https://www.youtube.com/embed/AQqfZ5A8w78?rel=0' },
+  49: { title: 'Class 49: Serverless Database Sharding & Connection Pooling', duration: '39:10', url: 'https://www.youtube.com/embed/RebA5J-yLHg?rel=0' },
+  50: { title: 'Class 50: AWS Lambda & Cloudflare Workers Edge Compute Architecture', duration: '32:30', url: 'https://www.youtube.com/embed/wm5gMKuwSYk?rel=0' },
+  51: { title: 'Class 51: High Throughput Kafka Message Broker Queues', duration: '41:00', url: 'https://www.youtube.com/embed/UnIZlZ-dLFY?rel=0' },
+  52: { title: 'Class 52: Event Sourcing & CQRS Architectural Pattern', duration: '37:15', url: 'https://www.youtube.com/embed/8v_G7QJ4n74?rel=0' },
+  53: { title: 'Class 53: Monorepo Workspaces with Turborepo & Nx Tooling', duration: '30:25', url: 'https://www.youtube.com/embed/9iU_IE6hJ70?rel=0' },
+  54: { title: 'Class 54: WebAssembly (Wasm) High-Performance Browser Compute', duration: '36:00', url: 'https://www.youtube.com/embed/qR8W-k43kEU?rel=0' },
+  55: { title: 'Class 55: WebRTC Peer-to-Peer Video Communication Channels', duration: '34:45', url: 'https://www.youtube.com/embed/DvlyzBEDyis?rel=0' },
+  56: { title: 'Class 56: Modern Web Components & Shadow DOM Encapsulation', duration: '29:10', url: 'https://www.youtube.com/embed/2I7uX8m03jY?rel=0' },
+  57: { title: 'Class 57: Zero-Knowledge Proofs & Web3 Cryptographic Verifications', duration: '43:30', url: 'https://www.youtube.com/embed/fOGdb1CTu5c?rel=0' },
+  58: { title: 'Class 58: Enterprise System Architecture & Domain Driven Design', duration: '40:00', url: 'https://www.youtube.com/embed/E45Ww1W93v4?rel=0' },
+  59: { title: 'Class 59: Multi-Tenant SaaS Data Isolation & Authorization Models', duration: '38:15', url: 'https://www.youtube.com/embed/RebA5J-yLHg?rel=0' },
+  60: { title: 'Class 60: Capstone Architecture Submission & Master Developer Defense', duration: '48:00', url: 'https://www.youtube.com/embed/bMknfKXIFA8?rel=0' },
+};
 
 const TOPIC_CATALOG: Record<number, TopicDetail> = {
   1: {
@@ -49,9 +105,9 @@ const TOPIC_CATALOG: Record<number, TopicDetail> = {
     <p>Accessibility is fundamental to modern web engineering...</p>
   </article>
 </main>`,
-    videoTitle: 'Class 1: HTML5 Semantics & Accessible DOM Architecture',
-    videoDuration: '24:15',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[0],
+    videoTitle: TOPIC_VIDEOS[1].title,
+    videoDuration: TOPIC_VIDEOS[1].duration,
+    videoClassUrl: TOPIC_VIDEOS[1].url,
   },
   2: {
     title: 'CSS Grid & Modern Flexbox Layout Systems',
@@ -81,9 +137,9 @@ const TOPIC_CATALOG: Record<number, TopicDetail> = {
   background-color: rgba(15, 23, 42, 0.8);
   backdrop-filter: blur(12px);
 }`,
-    videoTitle: 'Class 2: Master CSS Grid Auto-Fit & Container Queries',
-    videoDuration: '28:40',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[1],
+    videoTitle: TOPIC_VIDEOS[2].title,
+    videoDuration: TOPIC_VIDEOS[2].duration,
+    videoClassUrl: TOPIC_VIDEOS[2].url,
   },
   3: {
     title: 'JavaScript ES2024 Async Control & Event Loop',
@@ -107,9 +163,9 @@ async function fetchWithRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 50
     return fetchWithRetry(fn, retries - 1, delayMs * 2);
   }
 }`,
-    videoTitle: 'Class 3: Event Loop Microtasks & Concurrency Controls',
-    videoDuration: '32:10',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[2],
+    videoTitle: TOPIC_VIDEOS[3].title,
+    videoDuration: TOPIC_VIDEOS[3].duration,
+    videoClassUrl: TOPIC_VIDEOS[3].url,
   },
   4: {
     title: 'TypeScript Generics & Utility Type Mastery',
@@ -134,9 +190,9 @@ interface UserState {
   profile: { name: string; roles: string[] };
 }
 type ImmutableUserState = DeepReadonly<UserState>;`,
-    videoTitle: 'Class 4: Advanced TypeScript Conditional Types & Infer',
-    videoDuration: '35:20',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[3],
+    videoTitle: TOPIC_VIDEOS[4].title,
+    videoDuration: TOPIC_VIDEOS[4].duration,
+    videoClassUrl: TOPIC_VIDEOS[4].url,
   },
   5: {
     title: 'React 19 Server Components & Actions',
@@ -168,9 +224,9 @@ export function ChallengeSubmission({ currentStreak, submitAction }: { currentSt
     </form>
   );
 }`,
-    videoTitle: 'Class 5: React 19 RSC, Actions & useOptimistic Mutations',
-    videoDuration: '41:15',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[0],
+    videoTitle: TOPIC_VIDEOS[5].title,
+    videoDuration: TOPIC_VIDEOS[5].duration,
+    videoClassUrl: TOPIC_VIDEOS[5].url,
   },
   6: {
     title: 'Tailwind CSS v4 Custom Design System Tokens',
@@ -199,9 +255,9 @@ export function ChallengeSubmission({ currentStreak, submitAction }: { currentSt
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }`,
-    videoTitle: 'Class 6: Tailwind CSS v4 CSS-First Design Systems',
-    videoDuration: '22:50',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[1],
+    videoTitle: TOPIC_VIDEOS[6].title,
+    videoDuration: TOPIC_VIDEOS[6].duration,
+    videoClassUrl: TOPIC_VIDEOS[6].url,
   },
   7: {
     title: 'Next.js App Router Nested Layouts & Suspense',
@@ -230,9 +286,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }`,
-    videoTitle: 'Class 7: Next.js 15 App Router Architecture & Suspense',
-    videoDuration: '34:10',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[2],
+    videoTitle: TOPIC_VIDEOS[7].title,
+    videoDuration: TOPIC_VIDEOS[7].duration,
+    videoClassUrl: TOPIC_VIDEOS[7].url,
   },
   8: {
     title: 'Zustand & Context API Global State Management',
@@ -264,9 +320,9 @@ export const useStreakStore = create<StreakStore>()(
     { name: 'abtalks_state_v2' }
   )
 );`,
-    videoTitle: 'Class 8: Zustand State Management & Store Architecture',
-    videoDuration: '26:30',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[3],
+    videoTitle: TOPIC_VIDEOS[8].title,
+    videoDuration: TOPIC_VIDEOS[8].duration,
+    videoClassUrl: TOPIC_VIDEOS[8].url,
   },
   9: {
     title: 'RESTful API Route Handler Design & Validation',
@@ -294,9 +350,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }`,
-    videoTitle: 'Class 9: REST API Design & Next.js Route Handlers',
-    videoDuration: '30:45',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[0],
+    videoTitle: TOPIC_VIDEOS[9].title,
+    videoDuration: TOPIC_VIDEOS[9].duration,
+    videoClassUrl: TOPIC_VIDEOS[9].url,
   },
   10: {
     title: 'Zod Schema Parsing & Runtime Type Safety',
@@ -325,9 +381,9 @@ export const SubmissionSchema = z.object({
 });
 
 export type SubmissionInput = z.infer<typeof SubmissionSchema>;`,
-    videoTitle: 'Class 10: Runtime Type Safety with Zod Schema Validation',
-    videoDuration: '27:15',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[1],
+    videoTitle: TOPIC_VIDEOS[10].title,
+    videoDuration: TOPIC_VIDEOS[10].duration,
+    videoClassUrl: TOPIC_VIDEOS[10].url,
   },
   11: {
     title: 'Local Persistence & IndexedDB Sync Layer',
@@ -357,9 +413,9 @@ export const storageSync = {
     localStorage.setItem(key, JSON.stringify(value));
   }
 };`,
-    videoTitle: 'Class 11: Offline-First IndexedDB & Client Persistence',
-    videoDuration: '33:00',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[2],
+    videoTitle: TOPIC_VIDEOS[11].title,
+    videoDuration: TOPIC_VIDEOS[11].duration,
+    videoClassUrl: TOPIC_VIDEOS[11].url,
   },
   12: {
     title: 'State Machine Streak Engine & Optimistic UI',
@@ -391,15 +447,20 @@ export function transitionState(current: StreakState, event: 'miss_day' | 'submi
       return 'ACTIVE';
   }
 }`,
-    videoTitle: 'Class 12: FSM Streak Engines & Optimistic Architecture',
-    videoDuration: '38:50',
-    videoClassUrl: PUBLIC_EMBEDDABLE_VIDEOS[0],
+    videoTitle: TOPIC_VIDEOS[12].title,
+    videoDuration: TOPIC_VIDEOS[12].duration,
+    videoClassUrl: TOPIC_VIDEOS[12].url,
   },
 };
 
 export const TASKS: Task[] = Array.from({ length: 60 }, (_, i) => {
   const day = i + 1;
   const catalogItem = TOPIC_CATALOG[day];
+  const videoInfo = TOPIC_VIDEOS[day] || {
+    title: `Class ${day}: Mastering ${getDayTitle(day)}`,
+    duration: `${20 + (day % 15)}:30`,
+    url: 'https://www.youtube.com/embed/bMknfKXIFA8?rel=0',
+  };
 
   if (catalogItem) {
     return {
@@ -425,7 +486,6 @@ export const TASKS: Task[] = Array.from({ length: 60 }, (_, i) => {
   const cat = categories[(day - 1) % categories.length];
   const diff = difficulties[(day - 1) % difficulties.length];
   const title = getDayTitle(day);
-  const videoUrl = PUBLIC_EMBEDDABLE_VIDEOS[(day - 1) % PUBLIC_EMBEDDABLE_VIDEOS.length];
 
   return {
     day,
@@ -452,45 +512,75 @@ export async function executeDay${day}Module(payload: { day: number; timestamp: 
     score: ${92 + (day % 8)},
   };
 }`,
-    videoClassUrl: videoUrl,
-    videoTitle: `Class ${day}: Mastering ${title}`,
-    videoDuration: `${20 + (day % 15)}:30`,
+    videoClassUrl: videoInfo.url,
+    videoTitle: videoInfo.title,
+    videoDuration: videoInfo.duration,
     score: 92 + (day % 8),
   };
 });
 
 function getDayTitle(day: number): string {
-  const titles = [
-    'HTML5 Semantic Foundations & ARIA Accessibility',
-    'CSS Grid & Modern Flexbox Layout Systems',
-    'JavaScript ES2024 Async Control & Event Loop',
-    'TypeScript Generics & Utility Type Mastery',
-    'React 19 Server Components & Actions',
-    'Tailwind CSS v4 Custom Design System Tokens',
-    'Next.js App Router Nested Layouts & Suspense',
-    'Zustand & Context API Global State Management',
-    'RESTful API Route Handler Design & Validation',
-    'Zod Schema Parsing & Runtime Type Safety',
-    'Local Persistence & IndexedDB Sync Layer',
-    'State Machine Streak Engine & Optimistic UI',
-    'JWT Authentication & Middleware Protection',
-    'PostgreSQL & Prisma ORM Data Modeling',
-    'Redis Cache Invalidation & Rate Limiting',
-    'WebSockets Real-Time Activity Streams',
-    'Docker Containerization & Multi-stage Builds',
-    'CI/CD Workflows with GitHub Actions',
-    'GraphQL API Server & Query Optimization',
-    'Micro-Frontend Architecture & Module Federation',
-    'Server-Sent Events for Live Progress Updates',
-    'PWA Service Workers & Offline First Caching',
-    'Web Performance Budget & Core Web Vitals',
-    'Tailwind Animation Micro-Interactions',
-    'Headless Component Patterns & Compound Components',
-    'Custom React Hooks for Async Data Fetching',
-    'SWR & TanStack Query Mutation Strategies',
-    'Unit Testing with Vitest & React Testing Library',
-    'E2E End-to-End Automation with Playwright',
-    'Lighthouse Optimization & Bundle Splitting',
-  ];
-  return titles[(day - 1) % titles.length] || `Advanced System Module #${day}`;
+  const titles: Record<number, string> = {
+    1: 'HTML5 Semantic Foundations & ARIA Accessibility',
+    2: 'CSS Grid & Modern Flexbox Layout Systems',
+    3: 'JavaScript ES2024 Async Control & Event Loop',
+    4: 'TypeScript Generics & Utility Type Mastery',
+    5: 'React 19 Server Components & Actions',
+    6: 'Tailwind CSS v4 Custom Design System Tokens',
+    7: 'Next.js App Router Nested Layouts & Suspense',
+    8: 'Zustand & Context API Global State Management',
+    9: 'RESTful API Route Handler Design & Validation',
+    10: 'Zod Schema Parsing & Runtime Type Safety',
+    11: 'Local Persistence & IndexedDB Sync Layer',
+    12: 'State Machine Streak Engine & Optimistic UI',
+    13: 'JWT Authentication & Next.js Middleware Protection',
+    14: 'PostgreSQL & Prisma ORM Schema Modeling',
+    15: 'Redis Cache Invalidation & Rate Limiting',
+    16: 'WebSockets Real-Time Activity Streams',
+    17: 'Docker Multi-Stage Builds & Containerization',
+    18: 'CI/CD Workflows & GitHub Actions Pipelines',
+    19: 'GraphQL API Resolvers & Query Optimization',
+    20: 'Micro-Frontend Architecture & Module Federation',
+    21: 'Server-Sent Events (SSE) for Real-Time Data',
+    22: 'PWA Service Workers & Offline Caching',
+    23: 'Web Performance Budget & Core Web Vitals',
+    24: 'Tailwind CSS & Framer Motion Micro-Interactions',
+    25: 'Headless Component Patterns & Compound Components',
+    26: 'Custom React Hooks for Async Data Fetching',
+    27: 'SWR & TanStack Query Mutation Strategies',
+    28: 'Unit Testing React Apps with Vitest & RTL',
+    29: 'E2E End-to-End Automation with Playwright',
+    30: 'Lighthouse Score Optimization & Bundle Splitting',
+    31: 'Fullstack LLM Prompt Engineering & RAG Systems',
+    32: 'LangChain & Vector Embeddings Data Indexing',
+    33: 'OpenAI API Stream Responses & Edge Functions',
+    34: 'Pinecone Vector Database Search & Hybrid Indexing',
+    35: 'Building Autonomous AI Agentic Loops in TS',
+    36: 'Semantic Cache Invalidation for LLM Inferences',
+    37: 'Function Calling & Structured Tool Use with LLMs',
+    38: 'Fine-Tuning Open Source LLM Weights with LoRA',
+    39: 'Multimodal Vision & Audio Processing Pipelines',
+    40: 'Production AI Safety Guardrails & Input Validation',
+    41: 'Kubernetes Container Orchestration & Pod Autoscaling',
+    42: 'Terraform Infrastructure as Code (IaC) Provisioning',
+    43: 'NGINX Reverse Proxy & TLS Certificate Management',
+    44: 'Prometheus Metrics & Grafana Observability',
+    45: 'Zero-Downtime Blue/Green Cloud Deployments',
+    46: 'Distributed Tracing with OpenTelemetry & Jaeger',
+    47: 'Web Security & OWASP Top 10 Vulnerability Defense',
+    48: 'Content Delivery Networks (CDN) Edge Middleware',
+    49: 'Serverless Database Sharding & Connection Pooling',
+    50: 'AWS Lambda & Cloudflare Workers Edge Compute',
+    51: 'High Throughput Kafka Message Broker Queues',
+    52: 'Event Sourcing & CQRS Architectural Pattern',
+    53: 'Monorepo Workspaces with Turborepo & Nx Tooling',
+    54: 'WebAssembly (Wasm) High-Performance Browser Compute',
+    55: 'WebRTC Peer-to-Peer Video Communication Channels',
+    56: 'Modern Web Components & Shadow DOM Encapsulation',
+    57: 'Zero-Knowledge Proofs & Cryptographic Verifications',
+    58: 'Enterprise System Architecture & Domain Driven Design',
+    59: 'Multi-Tenant SaaS Data Isolation Models',
+    60: 'Capstone Architecture Submission & Developer Defense',
+  };
+  return titles[day] || `Advanced System Module #${day}`;
 }

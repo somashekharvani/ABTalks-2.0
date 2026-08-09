@@ -140,14 +140,25 @@ export function SaaSVideoPlayer({ title, duration, youtubeUrl }: SaaSVideoPlayer
                 </span>
               </div>
 
-              {/* Central Play Button */}
-              {!isPlaying && (
-                <button
-                  onClick={togglePlay}
-                  className="w-14 h-14 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center mx-auto shadow-2xl shadow-amber-500/50 hover:scale-110 active:scale-95 transition-all"
-                >
-                  <Play className="w-6 h-6 fill-slate-950 ml-1" />
-                </button>
+              {/* Central Play Button & Topic Overlay */}
+              {!isPlaying ? (
+                <div className="text-center space-y-2 max-w-md mx-auto my-auto">
+                  <button
+                    onClick={togglePlay}
+                    className="w-14 h-14 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center mx-auto shadow-2xl shadow-amber-500/50 hover:scale-110 active:scale-95 transition-all"
+                  >
+                    <Play className="w-6 h-6 fill-slate-950 ml-1" />
+                  </button>
+                  <p className="text-xs font-bold text-slate-100 font-sans px-3 py-1 rounded-full bg-slate-950/80 border border-slate-800 shadow-lg inline-block">
+                    {title}
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center my-auto pointer-events-none">
+                  <p className="text-[11px] font-mono text-amber-300 bg-slate-950/60 px-3 py-1 rounded-full border border-amber-500/20 inline-block animate-pulse">
+                    Playing: {title}
+                  </p>
+                </div>
               )}
 
               {/* Bottom Control Bar */}
