@@ -4,6 +4,8 @@
 
 ABTalks 2.0 is a mobile-first developer consistency platform designed to help students maintain momentum throughout a daily coding challenge.
 
+![ABTalks 2.0 Landing Page](public/assets/images/landing_page.png)
+
 Instead of treating a missed day as the end of progress, ABTalks uses a **deterministic Finite State Machine (FSM)** to model consistency, protect streaks through Tactical Shields, and provide a non-punitive Recovery Path when a streak is broken.
 
 The platform combines:
@@ -71,6 +73,8 @@ RECOVER WHEN NECESSARY
   ↓
 SHOWCASE PROGRESS
 ```
+
+![Learning → Assessment → Project Flow](public/assets/images/learning_project_flow.png)
 
 The core of the platform is a deterministic consistency engine.
 
@@ -285,6 +289,8 @@ The project also provides a **"RUN ALL 5 SCENARIOS"** button to execute the tran
 5 / 5 transition scenarios passed (100% Pass Rate) ⭐
 ```
 
+![FSM Architecture & Playground Visualizer](public/assets/images/fsm_architecture_playground.png)
+
 ---
 
 # 📐 Architecture Specification
@@ -309,6 +315,8 @@ The dashboard provides a complete view of the student's challenge journey with a
 - **Proof**: Verified GitHub repository & LinkedIn post link
 - **Consistency**: Streak, state, freeze/recovery details
 
+![Consistency Dashboard](public/assets/images/consistency_dashboard.png)
+
 ---
 
 # 🕐 Time Machine
@@ -326,6 +334,8 @@ Summarizes consistency beyond raw streak numbers with a 0-100 score and calculat
 # 👨💻 TaskFlow & 👔 Recruiter Preview
 
 The Day 12 challenge is built around TaskFlow Task Manager, providing a recruiter-oriented view with verified engineering evidence behind the `94/100` Reputation Score.
+
+![Recruiter Proof Profile](public/assets/images/recruiter_proof_profile.png)
 
 ---
 
